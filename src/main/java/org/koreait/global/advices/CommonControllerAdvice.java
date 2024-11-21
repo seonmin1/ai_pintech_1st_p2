@@ -68,6 +68,8 @@ public class CommonControllerAdvice {
         }
 
         data.put("status", status); // 응답 코드
+        data.put("_status", status);
+        data.put("message", message); // 응답 메세지
 
         ModelAndView mv = new ModelAndView();
         mv.setStatus(status);
