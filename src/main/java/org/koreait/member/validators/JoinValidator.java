@@ -25,6 +25,7 @@ public class JoinValidator implements Validator, PasswordValidator {
 
         // 커맨드 객체 검증 실패 시 추가 검증 진행 X
         if (errors.hasErrors()) {
+            errors.getAllErrors().stream().forEach(System.out::println);
             return;
         }
 
@@ -76,7 +77,7 @@ public class JoinValidator implements Validator, PasswordValidator {
 
         /* 3. 비밀번호, 비밀번호 확인 일치 여부 S */
         if (!password.equals(confirmPassword)) {
-            errors.rejectValue("confirmPasssword", "Mismatch");
+            errors.rejectValue("confirmPassword", "Mismatch");
         }
         /* 3. 비밀번호, 비밀번호 확인 일치 여부 E */
 

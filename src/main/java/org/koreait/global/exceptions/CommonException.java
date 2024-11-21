@@ -12,7 +12,7 @@ import java.util.Objects;
 @Getter @Setter
 public class CommonException extends RuntimeException {
 
-    private HttpStatus status; // 응답 상태
+    private HttpStatus status; // 응답 코드
     private boolean errorCode; // 에러 코드
 
     public CommonException(String message, HttpStatus status) {
