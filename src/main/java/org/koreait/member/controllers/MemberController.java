@@ -80,8 +80,10 @@ public class MemberController {
      * - 필수 약관 동의 여부 검증
      */
     @PostMapping("/join")
-    public String join(@Valid RequestAgree agree, Errors errors, @ModelAttribute RequestJoin form, Model model) {
+    public String join(RequestAgree agree, Errors errors, @ModelAttribute RequestJoin form, Model model) {
         commonProcess("join", model); // 회원 가입 공통 처리
+
+        joinValidator.validate(agree, errors);
 
         if (errors.hasErrors()) { // 약관 동의를 하지 않았다면 약관 동의 화면을 출력
             return utils.tpl("member/agree");
@@ -94,7 +96,8 @@ public class MemberController {
      * 회원가입 처리
      */
     @PostMapping("/join_ps")
-    public String joinPs(@SessionAttribute("requestAgree") RequestAgree agree, @Valid RequestJoin form, Errors errors, SessionStatus status, Model model) {
+    public String joinPs(@SessionAttribute("requestAgree") RequestAgree agree,
+                         @Valid RequestJoin form, Errors errors, SessionStatus status, Model model) {
         commonProcess("join", model); // 회원 가입 공통 처리
 
         joinValidator.validate(agree, errors); // 약관 동의 여부 체크

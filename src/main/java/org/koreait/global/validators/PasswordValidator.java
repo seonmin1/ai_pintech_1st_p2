@@ -34,7 +34,7 @@ public interface PasswordValidator {
      * [^!@#$%...] : 특수문자 제외 - 특수문자는 많으므로 특수문자를 제외하기보단 문자, 숫자를 제외하는 것이 좋음
      * ^ : 제외를 의미
      */
-    default boolean specialCharacters(String password) {
+    default boolean specialCharsCheck(String password) {
         // 숫자, 알파벳, 한글을 제외한 모든 문자 : 특수문자
         String pattern = ".*[^0-9a-zA-Zㄱ-ㅎ가-힣].*";
 
