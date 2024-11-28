@@ -1,5 +1,5 @@
 spring:
-  # 타임리프 설정
+  # 타임리프 설정 - 캐시를 사용해야 성능이 더 좋으므로 배포 시에는 캐시 true 설정
   thymeleaf:
     cache: true
     prefix: classpath:/templates/
