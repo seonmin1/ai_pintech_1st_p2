@@ -219,6 +219,11 @@ footer {
     height: 430px;
 }
 
+footer .ft-container {
+    width: 1040px;
+    margin: 0 auto;
+}
+
 footer .top {
     display: flex;
     justify-content: space-between;
