@@ -42,6 +42,10 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
                 errorCodes.add("NotBlank_password");
             }
 
+            if (errorCodes.isEmpty()) { // 에러코드가 없을 때
+                errorCodes.add("Failure.validate.login");
+            }
+
             form.setErrorCodes(errorCodes);
         }
 
