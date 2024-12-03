@@ -4,8 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.koreait.global.libs.Utils;
+import org.koreait.member.MemberInfo;
 import org.koreait.member.services.MemberUpdateService;
 import org.koreait.member.validators.JoinValidator;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -13,6 +16,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,9 +53,9 @@ public class MemberController {
         if (form.getErrorCodes() != null) { // 검증 실패
             form.getErrorCodes().stream().map(s -> s.split("_"))
                     .forEach(s -> {
-                        if (s.length > 1 && StringUtils.hasText(s[1])) {
+                        if (s.length > 1) {
                             errors.rejectValue(s[1], s[0]);
-                        } else {
+                        } else { // 1개일 때 글로벌 에러
                             errors.reject(s[0]);
                         }
                     });
@@ -59,6 +63,26 @@ public class MemberController {
 
         return utils.tpl("member/login");
     }
+
+    // 로그인 시 회원 정보 조회
+    @ResponseBody
+    @GetMapping("/test")
+    public void test() {
+        /*MemberInfo memberInfo = (MemberInfo) SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+        System.out.println(memberInfo);*/
+        System.out.println(SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal()); // 미로그인 상태 anonymousUser 문자열 출력
+    }
+    /*// @AuthenticationPrincipal 사용
+    public void test(@AuthenticationPrincipal MemberInfo memberInfo) {
+        System.out.println(memberInfo);
+    }*/
+    /*// Principal 요청메서드 사용
+    public void test(Principal principal) {
+        String email = principal.getName();
+        System.out.println(email);
+    }*/
 
     /**
      * 회원가입 약관 동의

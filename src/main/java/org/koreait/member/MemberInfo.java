@@ -1,13 +1,16 @@
 package org.koreait.member;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.ToString;
 import org.koreait.member.entities.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 
+@Getter
 @Builder
 @ToString
 public class MemberInfo implements UserDetails {
@@ -43,12 +46,14 @@ public class MemberInfo implements UserDetails {
     }
 
     @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
+    public boolean isCredentialsNonExpired() { // 30일 주기로 비밀번호 변경
+        LocalDateTime credentialChangedAt = member.getCredentialChangedAt();
+        return credentialChangedAt != null &&
+                credentialChangedAt.isAfter(LocalDateTime.now().minusMonths(1L));
     }
 
     @Override
-    public boolean isEnabled() {
-        return true;
+    public boolean isEnabled() { // 회원 탈퇴 여부
+        return member.getDeletedAt() == null; // null 일 때 탈퇴 X, null 아닐 때 탈퇴
     }
 }

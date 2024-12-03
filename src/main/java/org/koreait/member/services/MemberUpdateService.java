@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ public class MemberUpdateService {
     // 객체 생성
     private final MemberRepository memberRepository;
     private final AuthoritiesRepository authoritiesRepository;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
     /**
@@ -47,6 +48,7 @@ public class MemberUpdateService {
         // 비밀번호 해시화 - BCrypt 사용
         String hash = passwordEncoder.encode(form.getPassword());
         member.setPassword(hash);
+        member.setCredentialChangedAt(LocalDateTime.now()); // 비밀번호 변경 시 변경일시를 현재 날짜로 설정
 
         // 회원 권한
         Authorities auth = new Authorities();

@@ -4,9 +4,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.koreait.member.controllers.RequestJoin;
 import org.koreait.member.controllers.RequestLogin;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.util.StringUtils;
@@ -26,6 +27,12 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
 
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+
+        form.setEmail(email);
+        form.setPassword(password);
+
+        String redirectUrl = request.getContextPath() + "/member/login";
+
         /**
          * 1. 아이디 또는 비밀번호를 입력하지 않은 경우
          * 2. 아이디로 조회 안되는 경우
@@ -34,24 +41,31 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
         if (exception instanceof BadCredentialsException) {
             List<String> errorCodes = Objects.requireNonNullElse(form.getErrorCodes(), new ArrayList<>());
 
-            if (!StringUtils.hasText(email)) { // 이메일이 없을 때
+            if (!StringUtils.hasText(email)) {
                 errorCodes.add("NotBlank_email");
             }
 
-            if (!StringUtils.hasText(password)) { // 비밀번호가 없을 때
+            if (!StringUtils.hasText(password)) {
                 errorCodes.add("NotBlank_password");
             }
 
-            if (errorCodes.isEmpty()) { // 에러코드가 없을 때
+            if (errorCodes.isEmpty()) {
                 errorCodes.add("Failure.validate.login");
             }
 
             form.setErrorCodes(errorCodes);
+        } else if (exception instanceof CredentialsExpiredException) { // 비밀번호가 만료된 경우
+
+            redirectUrl = request.getContextPath() + "/member/password/change";
+        } else if (exception instanceof DisabledException) { // 탈퇴한 회원일 경우
+            form.setErrorCodes(List.of("Failure.disabled.login"));
         }
+
+        System.out.println(exception);
 
         session.setAttribute("requestLogin", form);
 
         // 로그인 실패 시 로그인 페이지로 이동
-        response.sendRedirect(request.getContextPath() + "/member/login");
+        response.sendRedirect(redirectUrl);
     }
 }

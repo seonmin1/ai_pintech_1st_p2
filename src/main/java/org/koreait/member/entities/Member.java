@@ -7,6 +7,7 @@ import org.koreait.global.entities.BaseEntity;
 import org.koreait.member.constants.Gender;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -58,4 +59,6 @@ public class Member extends BaseEntity {
     @ToString.Exclude // 순환 참조 배제
     @OneToMany(mappedBy = "member") // 기본 fetch 타입은 LAZY 이므로 따로 설정 X
     private List<Authorities> authorities;
+
+    private LocalDateTime credentialChangedAt; // 비밀번호 변경 일시
 }

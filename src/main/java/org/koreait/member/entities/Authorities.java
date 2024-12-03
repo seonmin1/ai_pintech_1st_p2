@@ -10,14 +10,14 @@ import org.koreait.member.constants.Authority;
  */
 @Data
 @Entity
-@IdClass(AuthoritiesId.class) // 복합키 - 기본키
+@IdClass(AuthoritiesId.class)
 public class Authorities {
     @Id
-    @ManyToOne(fetch = FetchType.LAZY) // 지연로딩
+    @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
 
     @Id
     @Enumerated(EnumType.STRING)
-    @Column(length = 15)
+    @Column(length=15)
     private Authority authority;
 }
