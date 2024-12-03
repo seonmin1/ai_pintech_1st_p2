@@ -217,6 +217,7 @@ header .move-to-store::after {
 footer {
     width: 100%;
     height: 430px;
+    background: #000;
 }
 
 footer .ft-container {
@@ -230,8 +231,7 @@ footer .top {
     align-items: center;
     width: 100%;
     height: 83px;
-    padding: 30px;
-    background: #000;
+    padding: 30px 0px 30px 150px;
     color: #fff;
     font-size: 15px;
     font-weight: 400;
@@ -254,18 +254,30 @@ footer .top .ft-logo > img {
 footer .top .ft-menu {
     display: flex;
     list-style-type: none;
-    padding: 0;
+    padding-left: 200px;
 }
 
-footer .top .ft-menu > li {
-    margin-right: 20px;
+footer .top .btn-top {
+    display: flex;
+    flex-direction: column; /* 수직 방향으로 정렬 */
+    justify-content: flex-end; /* 이미지를 아래로 정렬 */
+    position: absolute;
+    width: 99px;
+    height: 35px;
+    background-size: contain;
+}
+
+footer .top .btn-top > img {
+    display: flex;
+    flex-direction: column; /* 수직 방향으로 정렬 */
+    justify-content: flex-end; /* 이미지를 아래로 정렬 */
 }
 
 footer .middle {
     display: flex;
     width: 100%;
     height: 85px;
-    padding: 20px 0;
+    padding: 30px 150px;
     background: #1a1a1a;
     font-size: 13px;
     color: #fff;
@@ -284,11 +296,14 @@ footer .middle .company {
 footer .middle .sns {
     display: flex;
     display-flex: column;
-    align-items: end;
+    float: right;
+    margin-left: 330px;
 }
 
-footer .middle .sns > li a {
-
+footer .middle .sns > li a > img {
+    width: 43px;
+    height: 43px;
+    margin-left: 15px;
 }
 
 footer .bottom {
@@ -297,17 +312,12 @@ footer .bottom {
     height: 262px;
     background: #000;
     color: #fff;
-    padding: 30px 0 55px;
+    padding: 30px 150px;
     font-size: 14px;
 }
 
-footer .bottom .container {
-    display: flex;
-    display-flex: column;
-    width: 100%;
-    padding-right: 15px;
-    padding-left: 15px;
-    margin-right: auto;
-    margin-left: auto;
+footer .bottom .right {
+    float: right;
+    margin-left: 270px;
 }
 
