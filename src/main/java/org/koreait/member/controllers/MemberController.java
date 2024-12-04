@@ -68,21 +68,9 @@ public class MemberController {
     @ResponseBody
     @GetMapping("/test")
     public void test() {
-        /*MemberInfo memberInfo = (MemberInfo) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
-        System.out.println(memberInfo);*/
         System.out.println(SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal()); // 미로그인 상태 anonymousUser 문자열 출력
     }
-    /*// @AuthenticationPrincipal 사용
-    public void test(@AuthenticationPrincipal MemberInfo memberInfo) {
-        System.out.println(memberInfo);
-    }*/
-    /*// Principal 요청메서드 사용
-    public void test(Principal principal) {
-        String email = principal.getName();
-        System.out.println(email);
-    }*/
 
     /**
      * 회원가입 약관 동의
