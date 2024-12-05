@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,7 +27,7 @@ public class CommonRestControllerAdvice {
         if (e instanceof CommonException commonException) {
             status = commonException.getStatus();
 
-            Map<String, Object> errorMessages = commonException.getErrorMessages();
+            Map<String, List<String>> errorMessages = commonException.getErrorMessages();
 
             if (errorMessages != null) { // 에러 메세지 값이 있을 때 메세지에 에러 메세지 대체
                 message = errorMessages;

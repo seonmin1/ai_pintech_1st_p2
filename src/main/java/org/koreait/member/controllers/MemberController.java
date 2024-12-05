@@ -3,6 +3,8 @@ package org.koreait.member.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.koreait.global.annotations.ApplyErrorPage;
+import org.koreait.global.exceptions.BadRequestException;
 import org.koreait.global.libs.Utils;
 import org.koreait.member.MemberInfo;
 import org.koreait.member.services.MemberUpdateService;
@@ -22,10 +24,12 @@ import java.util.List;
 
 @Slf4j
 @Controller
+@ApplyErrorPage
 @RequestMapping("/member")
 @RequiredArgsConstructor
 @SessionAttributes({"requestAgree", "requestLogin"})
 public class MemberController {
+
     private final Utils utils;
     private final JoinValidator joinValidator; // 회원 가입 검증
     private final MemberUpdateService updateService; // 회원 가입 처리
@@ -62,14 +66,6 @@ public class MemberController {
         }
 
         return utils.tpl("member/login");
-    }
-
-    // 로그인 시 회원 정보 조회
-    @ResponseBody
-    @GetMapping("/test")
-    public void test() {
-        System.out.println(SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal()); // 미로그인 상태 anonymousUser 문자열 출력
     }
 
     /**

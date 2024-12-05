@@ -2,6 +2,7 @@ package org.koreait.global.advices;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.koreait.global.annotations.ApplyErrorPage;
 import org.koreait.global.exceptions.CommonException;
 import org.koreait.global.exceptions.scripts.AlertBackException;
 import org.koreait.global.exceptions.scripts.AlertException;
@@ -19,7 +20,7 @@ import java.util.Map;
 /**
  * @Controller 클래스만 한정
  */
-@ControllerAdvice(annotations = Controller.class)
+@ControllerAdvice(annotations = ApplyErrorPage.class)
 @RequiredArgsConstructor
 public class CommonControllerAdvice {
 
