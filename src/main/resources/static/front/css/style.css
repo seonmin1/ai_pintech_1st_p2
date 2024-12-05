@@ -216,26 +216,27 @@ header .move-to-store::after {
 /* 사이트 하단 풋터 S */
 footer {
     height: 50vh;
-
     background:black;
 }
 
-.ft-container {
-    max-width: 1250px;
-    margin: 0 auto;
-}
-
 .top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 30px 0;
-    color: #fff;
-    font-size: 15px;
-    font-weight: 400;
-
-    background: black;
+background: black;
 }
+
+.topp {
+      max-width:1250px;
+      margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30px 0;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 400;
+
+
+}
+
 
 .ft-menu {
 display:flex;
@@ -262,16 +263,20 @@ gap:30px;
    display: flex;
 }
 
-.middle {
+.middlee {
+    max-width:1250px;
+    margin: 0 auto;
+
     display:flex;
     justify-content: space-between;
     padding: 30px 0;
     font-size: 13px;
-    color: #fff;
+    color: white;
 }
 
-.middleBg{
-background:1a1a1a;
+.middle {
+    background: #1a1a1a;
+
 }
 
 .middleTit {
@@ -289,13 +294,25 @@ display:flex;
     margin-left: 15px;
 }
 
-.bottom {
+.bottomm {
+
+max-width:1250px;
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     color: #fff;
     font-size: 14px;
     background:black;
+    margin-top: 20px;
+    align-items: center;
 }
+
+.bottom {
+
+    background:black;
+
+}
+
 
 .bottom-left {
 display:flex;
