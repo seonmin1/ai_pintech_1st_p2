@@ -74,6 +74,7 @@ public class FileUploadService {
             File _file = new File(dir, uploadFileName); // 서버에 실제로 올라갈 파일명
 
             try {
+                // 파일 업로드 성공한 경우 DB 저장
                 file.transferTo(_file);
                 uploadedItems.add(item);
 
