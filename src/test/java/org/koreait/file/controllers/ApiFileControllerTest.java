@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.koreait.file.entities.FileInfo;
 import org.koreait.file.repositories.FileInfoRepository;
+import org.koreait.file.services.FileDeleteService;
 import org.koreait.file.services.FileInfoService;
 import org.koreait.member.constants.Gender;
 import org.koreait.member.controllers.RequestJoin;
@@ -48,6 +49,9 @@ public class ApiFileControllerTest {
     @Autowired
     private FileInfoService infoService;
 
+    @Autowired
+    private FileDeleteService deleteService;
+
     @BeforeEach
     void setup() { // 단위 테스트 시 사용
         // mockMvc = MockMvcBuilders.standaloneSetup(ApiFileController.class).build(); // ApiFileController 만 생성해서 test
@@ -82,7 +86,7 @@ public class ApiFileControllerTest {
                         .with(csrf().asHeader()))
                 .andDo(print());
 
-        Thread.sleep(5000); // 실행중인 쓰레드 5초 기다렸다가 실행
+        // Thread.sleep(5000); // 실행중인 쓰레드 5초 기다렸다가 실행
 
         /*List<FileInfo> items = repository.getList("testgid");
         for (FileInfo item : items) {
@@ -92,10 +96,21 @@ public class ApiFileControllerTest {
 
     @Test
     void test2() {
-        FileInfo item = infoService.get(1L);
-        System.out.println(item);
+        //FileInfo item = infoService.get(1L);
+        //System.out.println(item);
 
-        List<FileInfo> items = infoService.getList("testgid");
+        List<FileInfo> items = infoService.getList("testgid", null, null);
+        items.forEach(System.out::println);
+    }
+
+    @Test
+    void test3() {
+        // 단일삭제 테스트
+        // FileInfo item = deleteService.delete(1L);
+        // System.out.println(item);
+
+        // 복수개 삭제 테스트
+        List<FileInfo> items = deleteService.deletes("testgid", "testlocation");
         items.forEach(System.out::println);
     }
 }

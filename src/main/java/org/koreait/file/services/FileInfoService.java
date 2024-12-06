@@ -56,7 +56,7 @@ public class FileInfoService {
             andBuilder.and(fileInfo.done.eq(status == FileStatus.DONE));
         }
 
-        List<FileInfo> items = (List<FileInfo>) infoRepository.findAll(andBuilder, Sort.by(Sort.Order.asc("createAt")));
+        List<FileInfo> items = (List<FileInfo>) infoRepository.findAll(andBuilder, Sort.by(Sort.Order.asc("createdAt")));
 
         // 추가 정보 처리
         items.forEach(this::addInfo);
