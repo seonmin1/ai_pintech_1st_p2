@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @Lazy // 지연로딩 - 최초로 빈을 사용할 때 생성
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MemberUpdateService {
 
     // 객체 생성
@@ -73,6 +75,7 @@ public class MemberUpdateService {
             if (items != null) {
                 authoritiesRepository.deleteAll(items);
             }
+
             authoritiesRepository.saveAllAndFlush(authorities);
         }
 
