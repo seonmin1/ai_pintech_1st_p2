@@ -215,39 +215,35 @@ header .move-to-store::after {
 
 /* 사이트 하단 풋터 S */
 footer {
-    height: 50vh;
+    height: 40vh;
     background:black;
 }
 
 .top {
-background: black;
+    background: black;
 }
 
 .topp {
-      max-width:1250px;
-      margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 30px 0;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 400;
-
-
+    max-width:1250px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 30px 0;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 400;
 }
 
-
 .ft-menu {
-display:flex;
-gap:30px;
+    display:flex;
+    gap:15px;
 }
 
 .ft-menu > li > a {
     text-decoration-line:none;
     color:white;
 }
-
 
 .top .ft-logo {
     width: 200px,
@@ -263,10 +259,14 @@ gap:30px;
    display: flex;
 }
 
+.ft-bar {
+    margin-left: 15px;
+    color: gray;
+}
+
 .middlee {
     max-width:1250px;
     margin: 0 auto;
-
     display:flex;
     justify-content: space-between;
     padding: 30px 0;
@@ -276,16 +276,15 @@ gap:30px;
 
 .middle {
     background: #1a1a1a;
-
 }
 
 .middleTit {
-display:flex;
-flex-direction: column;
+    display:flex;
+    flex-direction: column;
 }
 
 .sns {
-display:flex;
+    display:flex;
 }
 
 .sns > li a > img {
@@ -295,8 +294,7 @@ display:flex;
 }
 
 .bottomm {
-
-max-width:1250px;
+    max-width:1250px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -308,25 +306,22 @@ max-width:1250px;
 }
 
 .bottom {
-
     background:black;
-
 }
 
 
 .bottom-left {
-display:flex;
-flex-direction: column;
-gap:3px;
+    display:flex;
+    flex-direction: column;
+    gap:3px;
 }
 
 .bottom .right {
     display:flex;
     flex-direction: column;
     gap:3px;
-
 }
 
 .right-bot{
-padding-top:30px;
+    padding-top:30px;
 }

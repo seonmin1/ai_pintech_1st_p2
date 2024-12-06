@@ -20,7 +20,7 @@ import java.util.UUID;
 /**
  * 파일 업로드 기능
  */
-@Lazy
+@Lazy // 순환참조문제(초기로딩 늦어지는 문제 등) 방지
 @Service
 @RequiredArgsConstructor
 @EnableConfigurationProperties(FileProperties.class)
@@ -28,6 +28,7 @@ public class FileUploadService {
 
     private final FileProperties properties;
     private final FileInfoRepository fileInfoRepository;
+    private final FileInfoService infoService;
 
     public List<FileInfo> upload(RequestUpload form) {
 
@@ -76,6 +77,9 @@ public class FileUploadService {
             try {
                 // 파일 업로드 성공한 경우 DB 저장
                 file.transferTo(_file);
+
+                // 추가 정보 처리
+                infoService.addInfo(item);
                 uploadedItems.add(item);
 
             } catch (IOException e) {
@@ -88,6 +92,6 @@ public class FileUploadService {
 
         }
 
-        return uploadedItems; // 성공 시 파일 업로드 정보 반환
+        return uploadedItems; // 성공 시 파일 업로드 정보 + 추가 정보(infoService) 반환
     }
 }

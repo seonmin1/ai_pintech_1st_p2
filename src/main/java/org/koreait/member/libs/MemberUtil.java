@@ -35,7 +35,7 @@ public class MemberUtil {
     public Member getMember() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         // 승인받고 getPrincipal이 MemberInfo의 구현체 일때
-        if (auth.isAuthenticated() && auth.getPrincipal() instanceof MemberInfo memberInfo) {
+        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof MemberInfo memberInfo) {
             return memberInfo.getMember();
         }
 
