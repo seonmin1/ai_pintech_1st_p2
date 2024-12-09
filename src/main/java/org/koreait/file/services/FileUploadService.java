@@ -44,8 +44,14 @@ public class FileUploadService {
         List<FileInfo> uploadedItems = new ArrayList<>();
 
         for (MultipartFile file : files) {
-            /* 1. 파일 업로드 정보 DB에 기록 S */
+            String contentType = file.getContentType();
 
+            // 이미지 형식의 파일만 허용하는 경우 - 이미지가 아닌 파일은 건너뛰기
+            if (form.isImageOnly() && contentType.indexOf("image/") == -1) {
+                continue;
+            }
+
+            /* 1. 파일 업로드 정보 DB에 기록 S */
             String fileName = file.getOriginalFilename();
             String extension = fileName.substring(fileName.lastIndexOf(".")); // 파일명.확장자 - 뒤에서부터 .찾고 .포함
 
@@ -54,14 +60,12 @@ public class FileUploadService {
             item.setLocation(location);
             item.setFileName(fileName); // 처음 올린 파일명 그대로 가져오기
             item.setExtension(extension);
-            item.setContentType(file.getContentType()); // 파일 형식 - image/png ...
+            item.setContentType(contentType); // 파일 형식 - image/png ...
 
             fileInfoRepository.saveAndFlush(item);
-
             /* 1. 파일 업로드 정보 DB에 기록 E */
 
             /* 2. 파일 업로드 처리 S */
-
             long seq = item.getSeq();
             String uploadFileName = seq + extension;
             long folder = seq % 10L; // 0~9
@@ -87,7 +91,6 @@ public class FileUploadService {
                 fileInfoRepository.delete(item);
                 fileInfoRepository.flush();
             }
-
             /* 2. 파일 업로드 처리 E */
 
         }
