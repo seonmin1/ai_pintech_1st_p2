@@ -3,6 +3,7 @@ commonLib.fileManager = {
     // 파일 업로드 처리
     upload(files, gid, location, single, imageOnly) {
         try {
+            /* 유효성 검사 S */
             if (!files || files.length === 0) {
                 throw new Error("파일을 선택하세요.");
             }
@@ -15,6 +16,35 @@ commonLib.fileManager = {
                 }
             }
 
+            if (!gid || !('' + gid).trim()) { // gid 값이 없을 때
+                throw new Error("잘못된 접근입니다.")
+            }
+            /* 유효성 검사 E */
+
+            /* 전송 양식 만들기 S */
+            const formData = new FormData();
+            formData.append("gid", gid);
+            formData.append("single", single);
+            formData.append("imageOnly", imageOnly);
+            if (location) { // location 값이 있을 때
+                formData.append("location", location);
+            }
+
+            for (const file of files) {
+                formData.append("file", file);
+            }
+            /* 전송 양식 만들기 E */
+
+            /* 양식 전송 처리 S */
+            const { getMeta } = commonLib;
+
+            const csrfHeader = getMeta("_csrf_header");
+            const csrfToken = getMeta("_csrf");
+            const url = getMeta("rootUrl");
+
+            console.log(csrfHeader, csrfToken, url);
+            /* 양식 전송 처리 E */
+
         } catch (err) {
             alert(err.message);
             console.error(err);
@@ -25,12 +55,16 @@ commonLib.fileManager = {
 
 window.addEventListener("DOMContentLoaded", function() {
     const fileUploads = document.getElementsByClassName("file-upload");
-    const fileEl = document.createElement("input");
-    fileEl.type = 'file';
+    let fileEl = null;
 
     for (const el of fileUploads) {
         el.addEventListener("click", function() {
             const { gid, location, single, imageOnly } = this.dataset;
+
+            if (!fileEl) {
+                fileEl = document.createElement("input");
+                fileEl.type = 'file';
+            }
 
             fileEl.gid = gid;
             fileEl.location = location;
@@ -39,15 +73,18 @@ window.addEventListener("DOMContentLoaded", function() {
             fileEl.multiple = !fileEl.single; // false - 단일 파일 선택, true - 여러 파일 선택 가능
 
             fileEl.click();
+
+            // 파일 선택 시 - change 이벤트 발생
+            fileEl.removeEventListener("change", fileEventHandler); // 이벤트 제거
+            fileEl.addEventListener("change", fileEventHandler); // 이벤트 추가 - 중복 추가를 막기 위해 제거 후 추가
+
+            function fileEventHandler(e) {
+                const files = e.currentTarget.files;
+                const { gid, location, single, imageOnly } = fileEl;
+
+                const { fileManager } = commonLib;
+                fileManager.upload(files, gid, location, single, imageOnly);
+            }
         });
     }
-
-    // 파일 선택 시 - change 이벤트 발생
-    fileEl.addEventListener("change", function(e) {
-       const files = e.currentTarget.files;
-       const { gid, location, single, imageOnly } = fileEl;
-
-       const { fileManager } = commonLib;
-       fileManager.upload(files, gid, location, single, imageOnly);
-    });
 });
