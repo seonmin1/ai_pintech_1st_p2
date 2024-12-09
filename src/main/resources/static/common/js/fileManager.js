@@ -40,9 +40,15 @@ commonLib.fileManager = {
 
             const csrfHeader = getMeta("_csrf_header");
             const csrfToken = getMeta("_csrf");
-            const url = getMeta("rootUrl");
+            const url = getMeta("rootUrl") + "api/file/upload";
 
-            console.log(csrfHeader, csrfToken, url);
+            fetch(url, {
+                method: "POST",
+                headers: {[csrfHeader]: csrfToken}, // {[헤더이름]: 토큰값}
+                body: formData
+            })
+            .then(res => res.json())
+            .then(json => console.log(json));
             /* 양식 전송 처리 E */
 
         } catch (err) {
