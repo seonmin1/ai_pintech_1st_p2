@@ -29,7 +29,7 @@ public class FileDeleteService {
         // 0. 파일 소유자만 삭제 가능하게 통제 - 다만 관리자는 가능
         String createdBy = item.getCreatedBy();
         if (!memberUtil.isAdmin() && StringUtils.hasText(createdBy) // 관리자가 아니고 회원이 올린 파일일 때
-                && (!memberUtil.isLogin() || (memberUtil.getMember().getEmail().equals(createdBy)))) { // 비회원 또는 로그인상태지만 파일 소유자가 아닐 때
+                && (!memberUtil.isLogin() || (!memberUtil.getMember().getEmail().equals(createdBy)))) { // 비회원 또는 로그인상태지만 파일 소유자가 아닐 때
             throw new UnAuthorizedException(); // 삭제권한 없음
         }
 

@@ -9,10 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.koreait.file.constants.FileStatus;
 import org.koreait.file.entities.FileInfo;
-import org.koreait.file.services.FileDeleteService;
-import org.koreait.file.services.FileDownloadService;
-import org.koreait.file.services.FileInfoService;
-import org.koreait.file.services.FileUploadService;
+import org.koreait.file.services.*;
 import org.koreait.global.exceptions.BadRequestException;
 import org.koreait.global.libs.Utils;
 import org.koreait.global.rests.JSONData;
@@ -37,6 +34,7 @@ public class ApiFileController {
     private final FileDownloadService downloadService;
     private final FileInfoService infoService;
     private final FileDeleteService deleteService;
+    private final FileDoneService doneService;
 
     // 파일 업로드
     @Operation(summary = "파일 업로드 처리") // summary - 내용기입
@@ -64,6 +62,12 @@ public class ApiFileController {
         }
 
         List<FileInfo> uploadedFiles = uploadService.upload(form);
+
+        // 업로드 완료 하자마자 완료 처리
+        if (form.isDone()) {
+            doneService.process(form.getGid(), form.getLocation());
+        }
+
         JSONData data = new JSONData(uploadedFiles);
         data.setStatus(HttpStatus.CREATED);
 
