@@ -52,8 +52,14 @@ commonLib.fileManager = {
             alert(err.message);
             console.error(err);
         }
+    },
+    // 파일 등록번호로 파일 삭제
+    // @param seq : 파일 등록번호
+    // @param callback : 삭제 후 후속처리 콜백 함수
+    delete(seq, callback) {
+        const { ajaxLoad } = commonLib;
+        ajaxLoad(`/api/file/delete/${seq}`, file => callback(file), 'DELETE');
     }
-
 };
 
 window.addEventListener("DOMContentLoaded", function() {
