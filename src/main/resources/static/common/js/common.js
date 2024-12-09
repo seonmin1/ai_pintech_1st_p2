@@ -33,7 +33,7 @@ commonLib.ajaxLoad = function(url, callback, method = 'GET', data, headers) { //
         headers,
     }
 
-    if (data && method in ['POST', 'PUT', 'PATCH']) { // body 쪽 데이터 추가 가능
+    if (data && ['POST', 'PUT', 'PATCH'].includes(method)) { // body 쪽 데이터 추가 가능
         options.body = data instanceof FormData ? data : JSON.stringify(data); // FormData 형식일 때 그대로, 아니면 JSON 형식으로 변환
     }
 
