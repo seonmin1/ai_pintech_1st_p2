@@ -14,7 +14,7 @@ commonLib.getMeta = function(mode) {
 // @params url : 요청 주소, http[s] : 외부 URL - 컨텍스트 경로는 추가 안함
 // @params method : 요청 방식 - GET, POST, DELETE, PATCH
 // @params callback : 응답 완료 후 후속처리 콜백 함수
-// @params data : 요청 데이터
+// @params data : 요청 데이터(POST, PATCH, PUT 일때만 가능)
 // @params headers : 추가 요청 헤더
 commonLib.ajaxLoad = function(url, callback, method = 'GET', data, headers) { // method 기본값 GET 설정
     if (!url) return; // url 없을 경우 처리 안함
@@ -22,7 +22,7 @@ commonLib.ajaxLoad = function(url, callback, method = 'GET', data, headers) { //
     const { getMeta } = commonLib;
     const csrfHeader = getMeta("_csrf_header");
     const csrfToken = getMeta("_csrf");
-    url = /^http[s]?:/.test(url) ? url : getMeta("rootUrl") + url;
+    url = /^http[s]?:/.test(url) ? url : getMeta("rootUrl") + url.replace("/", "");
 
     headers = headers ?? {}; // headers 없으면 빈 배열 반환
     headers[csrfHeader] = csrfToken; // 토큰에 실어서 보냄

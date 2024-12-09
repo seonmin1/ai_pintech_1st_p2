@@ -36,19 +36,12 @@ commonLib.fileManager = {
             /* 전송 양식 만들기 E */
 
             /* 양식 전송 처리 S */
-            const { getMeta } = commonLib;
-
-            const csrfHeader = getMeta("_csrf_header");
-            const csrfToken = getMeta("_csrf");
-            const url = getMeta("rootUrl") + "api/file/upload";
-
-            fetch(url, {
-                method: "POST",
-                headers: {[csrfHeader]: csrfToken}, // {[헤더이름]: 토큰값}
-                body: formData
-            })
-            .then(res => res.json())
-            .then(json => console.log(json));
+            const { ajaxLoad } = commonLib;
+            ajaxLoad("/api/file/upload", function(items) {
+                if (typeof callbackFileUpload === 'function') { // 파일 업로드 후 후속 처리
+                    callbackFileUpload(items);
+                }
+            }, 'POST', formData);
             /* 양식 전송 처리 E */
 
         } catch (err) {
