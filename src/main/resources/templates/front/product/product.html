@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      <!--layout:decorate="~{front/layouts/main}">-->
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>상품</title>
+    <link rel="stylesheet" th:href="@{/front/css/product/style.css}"/>
+    <script th:src="@{/front/js/product/product.js}" defer></script>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="container">
+        <div class="box">
+            <span class="search_text">소식</span>
+            <div class="input_box">
+                <input type="text" placeholder="검색어를 입력해주세요" id="sword" />
+                <div class="search_box">
+                    <img src="imgs/search.png" alt="">
+                </div>
+            </div>
+        </div>
+        <div class="main">
+            <div class="one_line">
+                <a class="linkalbum" href="https://pokemonkorea.co.kr/">
+                    <img class="linkimg" src="imgs/main_logo.png" alt=""/>
+                </a>
+                <a class="news_tag" href="https://pokemonkorea.co.kr/news">> 소식</a>
+            </div>
+            <div class="line_draw"></div>
+            <section>
+                <div class="category">
+                    <button class="cate">전체</button>
+                    <button class="cate">공지</button>
+                    <button class="cate">이벤트</button>
+                    <button class="cate">게임</button>
+                    <button class="cate">카드 게임</button>
+                    <button class="cate">애니&영화</button>
+                    <button class="cate">상품</button>
+                </div>
+                <div class="card_collection">
+                    <div th:each="newsCard: ${newsCardList}" class="card ">
+                        <a th:href="${newsCard.pageUrl}">
+                            <div class="album">
+                                <img
+                                        class="card_img"
+                                        th:src="${newsCard.imageUrl}"
+                                        alt=""
+                                />
+                            </div>
+                            <div class="card_text">
+                                <h3 class="title" th:text="${newsCard.title}"></h3>
+                                <div class="sub_title">
+                                    <span th:text="${newsCard.sub_title}"></span>
+                                    <span class="arrow_back">
+                            <img class="arrow" src="imgs/icon_go.png" alt=""/>
+                            </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="more"><button><p>더보기</p></button></div>
+            </section>
+        </div>
+    </div>
+</main>
+</body>
+</html>

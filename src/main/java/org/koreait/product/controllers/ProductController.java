@@ -33,4 +33,5 @@ public class ProductController {
 
         return "front/product/product";
     }
+
 }
