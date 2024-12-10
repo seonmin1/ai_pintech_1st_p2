@@ -10,9 +10,9 @@ commonLib.fileManager = {
 
             if (imageOnly) { // 이미지만 업로드 하는 경우
                 for (const file of files) {
-                    if (file.type.indexOf("image/") === -1) { // 이미지가 아닌 파일인 경우
-                        throw new Error("이미지 형식이 아닙니다.");
-                    }
+                     if (file.type.indexOf("image/") === -1) { // 이미지가 아닌 파일인 경우
+                         throw new Error("이미지 형식이 아닙니다.");
+                     }
                 }
             }
 
@@ -68,7 +68,7 @@ window.addEventListener("DOMContentLoaded", function() {
 
     for (const el of fileUploads) {
         el.addEventListener("click", function() {
-            const { gid, location, single, imageOnly, done } = this.dataset;
+            const {gid, location, single, imageOnly, done} = this.dataset;
 
             if (!fileEl) {
                 fileEl = document.createElement("input");
@@ -79,7 +79,7 @@ window.addEventListener("DOMContentLoaded", function() {
             fileEl.location = location;
             fileEl.imageOnly = imageOnly === 'true';
             fileEl.single = single === 'true';
-            fileEl.multiple = !fileEl.single; // false - 단일 파일 선택, true - 여러 파일 선택 가능
+            fileEl.multiple = !fileEl.single;  // false - 단일 파일 선택, true - 여러파일 선택 가능
             fileEl.done = done === 'true'; // 업로드 완료 하자마자 완료 처리
 
             fileEl.click();
@@ -89,22 +89,22 @@ window.addEventListener("DOMContentLoaded", function() {
             fileEl.addEventListener("change", fileEventHandler); // 이벤트 추가 - 중복 추가를 막기 위해 제거 후 추가
 
              function fileEventHandler(e) {
-                 const files = e.currentTarget.files;
-                 const {gid, location, single, imageOnly, done} = fileEl;
+                const files = e.currentTarget.files;
+                const {gid, location, single, imageOnly, done} = fileEl;
 
-                 const { fileManager } = commonLib;
-                 fileManager.upload(files, gid, location, single, imageOnly, done);
+                const { fileManager } = commonLib;
+                fileManager.upload(files, gid, location, single, imageOnly, done);
              }
         });
     }
 
-    // 드래그 & 드롭 파일 업로드 처리
+    // 드래그 앤 드롭 파일 업로드 처리
     const dragUploads = document.getElementsByClassName("drag-upload");
-
     for (const el of dragUploads) {
         el.addEventListener("dragover", function(e) {
             // 기본 동작 차단
             e.preventDefault();
+
         });
 
         el.addEventListener("drop", function(e) {
@@ -113,19 +113,19 @@ window.addEventListener("DOMContentLoaded", function() {
 
             const files = e.dataTransfer.files;
 
-            let { gid, location, single, imageOnly, done } = this.dataset;
-            single = single === 'true';
-            imageOnly = imageOnly === 'true';
-            done = done === 'true';
+            let {gid, location, single, imageOnly, done} = this.dataset;
+            single = single === "true";
+            imageOnly = imageOnly === "true";
+            done = done === "true";
 
-            if (single && files.length > 1) { // 단일 파일 업로드이지만 여러개를 선택한 경우
+            if (single && files.length > 1) { // 단일 파일 업로드 이지만 여러개를 선택한 경우
                 alert("하나의 파일만 업로드 하세요.");
                 return;
             }
 
             const { fileManager } = commonLib;
             fileManager.upload(files, gid, location, single, imageOnly, done);
-        })
+        });
     }
 
 });
