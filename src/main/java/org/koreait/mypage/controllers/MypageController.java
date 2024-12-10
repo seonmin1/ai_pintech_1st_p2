@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.koreait.global.libs.Utils;
 import org.koreait.member.entities.Member;
 import org.koreait.member.libs.MemberUtil;
+import org.koreait.member.services.MemberUpdateService;
+import org.koreait.mypage.validators.ProfileValidator;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -23,6 +27,9 @@ import java.util.List;
 public class MypageController {
     private final Utils utils;
     private final MemberUtil memberUtil;
+    private final ModelMapper modelMapper; // getter, setter 자동
+    private final MemberUpdateService updateService;
+    private final ProfileValidator profileValidator;
 
     @ModelAttribute("profile")
     public Member getMember() {
@@ -42,12 +49,19 @@ public class MypageController {
     }
 
     @GetMapping("/profile")
-    public String profile(@ModelAttribute RequestProfile form, Model model) {
+    public String profile(Model model) {
         commonProcess("profile", model);
 
         Member member = memberUtil.getMember();
-        form.setName(member.getName());
-        form.setNickName(member.getNickName());
+        RequestProfile form = modelMapper.map(member, RequestProfile.class);
+
+        String optionalTerms = member.getOptionalTerms();
+
+        if (StringUtils.hasText(optionalTerms)) {
+            form.setOptionalTerms(Arrays.stream(optionalTerms.split("\\|\\|")).toList());
+        }
+
+        model.addAttribute("requestProfile", form);
 
         return utils.tpl("mypage/profile");
     }
@@ -56,18 +70,19 @@ public class MypageController {
     public String updateProfile(@Valid RequestProfile form, Errors errors, Model model) {
         commonProcess("profile", model);
 
+        profileValidator.validate(form, errors);
+
         if (errors.hasErrors()) {
             return utils.tpl("mypage/profile");
         }
 
-        return null;
+        updateService.process(form);
+
+        return "redirect:/mypage"; // 회원정보 수정 완료 후 마이페이지 메인으로 이동
     }
 
     /**
      * 컨트롤러 공통 처리 영역
-     *
-     * @param mode
-     * @param model
      */
     private void commonProcess(String mode, Model model) {
         mode = StringUtils.hasText(mode) ? mode : "main";
