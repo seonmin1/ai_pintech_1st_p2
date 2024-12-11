@@ -16,7 +16,7 @@ import java.util.List;
 public class ProductController {
 
     @GetMapping("/product")
-    public String news(Model model) {
+    public String product(Model model) {
 
         List<Product> productList = new ArrayList();
 
