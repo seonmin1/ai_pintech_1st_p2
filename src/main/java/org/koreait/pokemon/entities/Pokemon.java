@@ -1,11 +1,10 @@
 package org.koreait.pokemon.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
+import jakarta.persistence.*;
 import lombok.Data;
 import org.koreait.global.entities.BaseEntity;
+
+import java.util.List;
 
 /**
  * 래퍼클래스는 null 허용
@@ -32,4 +31,10 @@ public class Pokemon extends BaseEntity {
     private String flavorText; // 설명
     private String types; // 타입1||타입2|| 형태로 가공
     private String abilities; // 능력1||능력2|| 형태로 가공
+
+    @Transient // DB 반영 X
+    private List<String> _type; // 가공한 형태
+
+    @Transient // DB 반영 X
+    private List<String> _abilities; // 가공한 형태
 }

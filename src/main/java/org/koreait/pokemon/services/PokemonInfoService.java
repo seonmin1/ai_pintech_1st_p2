@@ -16,9 +16,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.data.domain.Sort.Order.desc;
@@ -83,6 +85,18 @@ public class PokemonInfoService {
 
     // 추가 정보 처리
     private void addInfo(Pokemon item) {
+        // abilities 2차 가공
+        String abilities = item.getAbilities();
 
+        if (StringUtils.hasText(abilities)) {
+            item.set_abilities(Arrays.stream(abilities.split("\\|\\|")).toList());
+        }
+
+        // types 2차 가공
+        String types = item.getTypes();
+
+        if (StringUtils.hasText(types)) {
+            item.set_type(Arrays.stream(types.split("\\|\\|")).toList());
+        }
     }
 }
