@@ -7,6 +7,7 @@ import org.koreait.file.entities.FileInfo;
 import org.koreait.global.entities.BaseEntity;
 import org.koreait.member.constants.Gender;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
  */
 @Data
 @Entity
-public class Member extends BaseEntity {
+public class Member extends BaseEntity implements Serializable {
     @Id @GeneratedValue // 기본키
     private Long seq; // 회원 번호
 

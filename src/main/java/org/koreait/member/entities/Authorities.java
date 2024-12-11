@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.koreait.member.constants.Authority;
 
+import java.io.Serializable;
+
 /**
  * Member & Authority 복합키 생성
  * - @IdClass 사용
@@ -11,7 +13,7 @@ import org.koreait.member.constants.Authority;
 @Data
 @Entity
 @IdClass(AuthoritiesId.class)
-public class Authorities {
+public class Authorities implements Serializable {
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;

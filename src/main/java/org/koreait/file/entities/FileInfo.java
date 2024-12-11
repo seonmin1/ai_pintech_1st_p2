@@ -5,6 +5,8 @@ import lombok.Data;
 import org.koreait.global.entities.BaseMemberEntity;
 import org.springframework.util.StringUtils;
 
+import java.io.Serializable;
+
 /**
  * 파일 정보 - 업로드 전 정보 기록이 우선되도록 구성
  */
@@ -14,7 +16,7 @@ import org.springframework.util.StringUtils;
         @Index(name = "idx_gid", columnList = "gid, createdAt"),
         @Index(name = "idx_gid_location", columnList = "gid, location, createdAt")
 }) // Index - 선택도가 낮을수록 유리, 높으면 사용하지 않는 것이 나음
-public class FileInfo extends BaseMemberEntity {
+public class FileInfo extends BaseMemberEntity implements Serializable {
 
     @Id @GeneratedValue // 증감 번호 등록 시 사용하는 애너테이션
     private Long seq; // 파일 등록 번호

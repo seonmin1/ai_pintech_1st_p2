@@ -3,10 +3,11 @@ package org.koreait.member.controllers;
 import jakarta.validation.constraints.AssertTrue;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class RequestAgree {
+public class RequestAgree implements Serializable {
     // @AssertTrue
     private boolean requiredTerms1; // 필수 약관 동의 여부 / 필수는 반드시 모두 선택 - 갯수 체크만으로도 충분
 
