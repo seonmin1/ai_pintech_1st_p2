@@ -1,14 +1,13 @@
 window.addEventListener("DOMContentLoaded", function() {
     const el = document.querySelector(".profile-image");
-    el.addEventListener("dblclick", function()  {
+    el.addEventListener("dblclick", function() {
         const seq = this.dataset.seq;
-
         if (!seq || !confirm('정말 삭제하겠습니까?')) {
             return;
         }
 
         const { fileManager } = commonLib;
-        fileManager.delete(seq, function() {
+        fileManager.delete(seq, function(file) {
             // 삭제 후 후속 처리
             delete el.dataset.seq;
             el.innerHTML = "";
@@ -17,7 +16,11 @@ window.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-// 파일 업로드 후속 처리
+
+/**
+* 파일 업로드 후속 처리
+*
+*/
 function callbackFileUpload(files) {
     if (!files || files.length === 0) {
         return;
