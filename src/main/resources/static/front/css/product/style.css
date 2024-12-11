@@ -1,0 +1,263 @@
+
+
+
+a, a:visited, a:hover, a:active {
+  color: inherit;
+      text-decoration: none;
+
+}
+
+
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+
+.main {
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+}
+
+.box {
+  width: 100%;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding:50px;
+  background-image: url("/imgs/nnews_nav_bg.jpg");
+}
+
+
+.input_box{
+       padding: 15px 20px;
+       width: 60%;
+    display:flex;
+}
+#sword{
+    border: none;
+        width: 100%;
+        height: 57px;
+}
+
+
+#sword::placeholder {
+  font-size: 20px; /* placeholder 글씨 크기 */
+  color: #888; /* placeholder 글씨 색상 */
+  position: relative;
+  bottom: -3px;
+
+}
+
+.search_box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 57px;
+  background-color: #da343c;
+
+  padding: 19.6px 9.6px;
+}
+
+.search_box > img {
+  width: 50%;
+}
+
+.search_text {
+  color: white;
+  font-size: 50px;
+  font-weight: bold;
+}
+
+.one_line {
+  width: 200px;
+  position: relative;
+  top: -33px;
+  left: 1100px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 20px;
+}
+
+
+.news_tag {
+  width: 70px;
+  height: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items:center;
+  text-decoration: none;
+}
+
+.linkalbum {
+  width: 70px;
+  height: 70px;
+}
+
+.linkalbum > .linkimg {
+  width: 100%;
+  height: 100%;
+  object-fit:contain;
+}
+
+.category {
+  padding-top: 30px;
+  padding-bottom: 20px;
+  border-bottom: solid 1px gray;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: space-between;
+  gap: 90px;
+}
+
+.cate {
+  padding: 20px;
+  border: none;
+  background-color: transparent;
+  font-size: 20px;
+  font-weight: bold;
+  color:#b3b3b3;
+  border-bottom: none;
+  padding-bottom: 20px; /* 밑줄 공간 확보 */
+
+}
+
+.cate:hover {
+  color: #6c757d;
+}
+
+.cate:active {
+  color:black;
+  box-shadow: 0 5px 0 0 #D63936;  /* 밑줄 효과 */
+}
+
+.cate:active::after {
+    content: ''; /* 가상 요소 생성 */
+    position: absolute;
+    bottom: 0;
+    left: 50%; /* 버튼 중앙으로 위치 */
+    transform: translateX(-50%); /* 정확히 중앙 정렬 */
+    width: 50%; /* 밑줄의 길이 */
+    height: 2px; /* 밑줄 두께 */
+    background-color: #ff6347; /* 밑줄 색상 */
+}
+
+.line_draw {
+    border-top: solid 1px gray;
+    width:100%;
+    position: absolute;
+    left: 0;
+    top: 450px;
+}
+
+
+.card_collection {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    padding: 33px 0;
+    gap:10px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  width: 306px;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+}
+
+.game{
+  border-bottom: solid 3px #FF0000;
+}
+.cardGame{
+  border-bottom: solid 3px #0080ff;
+}
+.ani{
+    border-bottom: solid 3px #005984;
+}
+.notification{
+    border-bottom: solid 3px #FED856;
+}
+.event{
+    border-bottom: solid 3px #47C564;
+}
+.product{
+    border-bottom: solid 3px #9E41CC;
+}
+
+
+.album {
+  width: 306px;
+  height: 172px;
+}
+
+.card_img {
+  width: 100%;
+  height: 100%;
+}
+
+.card_text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 30px;
+  padding: 0 20px 10px;
+}
+
+.sub_title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 7px;
+}
+
+.arrow_back {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0080ff;
+  width: 42px;
+  height: 25px;
+  border-radius: 999px;
+}
+
+.arrow {
+  position: relative;
+}
+
+.more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.more > button{
+    border: none;
+    background-color: black;
+    color: white;
+    padding: 10px 0 20px;
+    margin-top: 20px;
+    width: 400px;
+    font-size: 15px;
+    transform: skew(-20deg);
+}
+
+.more > button > p{
+transform: skew(20deg);
+}
