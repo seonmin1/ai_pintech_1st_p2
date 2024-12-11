@@ -3,10 +3,14 @@ package org.koreait.pokemon.controllers;
 import lombok.RequiredArgsConstructor;
 import org.koreait.global.annotations.ApplyErrorPage;
 import org.koreait.global.libs.Utils;
+import org.koreait.global.paging.ListData;
+import org.koreait.pokemon.entities.Pokemon;
+import org.koreait.pokemon.services.PokemonInfoService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -23,17 +27,26 @@ import java.util.List;
 public class PokemonController {
 
     private final Utils utils;
+    private final PokemonInfoService infoService;
 
     @GetMapping("/list")
-    public String list(Model model) {
+    public String list(@ModelAttribute PokemonSearch search, Model model) {
 
         commonProcess("list", model);
+
+        // 페이지가 있고, 페이지네이션이 있는 객체는 아래의 형식으로 출력 고정
+        ListData<Pokemon> data = infoService.getList(search);
+        model.addAttribute("items", data.getItems());
+        model.addAttribute("pagination", data.getPagination());
 
         return utils.tpl("pokemon/list");
     }
 
     @GetMapping("/view/{seq}")
     public String view(@PathVariable("seq") Long seq, Model model) {
+
+        Pokemon item = infoService.get(seq);
+        model.addAttribute("item", item);
 
         commonProcess("view", model);
 
@@ -52,6 +65,13 @@ public class PokemonController {
 
         } else if (mode.equals("view")) {
             addCss.add("pokemon/view"); // 상세쪽에만 적용되는 스타일
+
+            // 상세 보기에서는 포켓몬 이름으로 제목 설정
+            Pokemon item = (Pokemon) model.getAttribute("item");
+
+            if (item != null) {
+                pageTitle = String.format("%s - %s", item.getName(), pageTitle);
+            }
         }
 
         model.addAttribute("pageTitle", pageTitle);

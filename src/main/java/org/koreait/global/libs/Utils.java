@@ -30,7 +30,7 @@ public class Utils {
         String ua = request.getHeader("User-Agent");
         String pattern = ".*(iPhone|iPod|iPad|BlackBerry|Android|Windows CE|LG|MOT|SAMSUNG|SonyEricsson).*";
 
-        return ua.matches(pattern);
+        return StringUtils.hasText(ua) && ua.matches(pattern);
     }
 
     /**
