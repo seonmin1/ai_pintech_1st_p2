@@ -5,7 +5,7 @@ server:
       cookie.name: bfb4c74f0
 
 spring:
-  # redis 설정
+  # 레디스 설정
   data:
     redis:
       host: ${redis.host}
