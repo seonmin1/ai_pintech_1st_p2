@@ -5,6 +5,7 @@ import lombok.Data;
 import org.koreait.global.entities.BaseEntity;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 래퍼클래스는 null 허용
@@ -40,4 +41,10 @@ public class Pokemon extends BaseEntity {
 
     @Transient // DB 반영 X
     private List<String> _abilities; // 가공한 형태
+
+    @Transient
+    private Map<String, Object> prevItem; // 이전 포켓몬 정보
+
+    @Transient
+    private Map<String, Object> nextItem; // 다음 포켓몬 정보
 }
