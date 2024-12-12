@@ -4,20 +4,21 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.koreait.global.annotations.ApplyErrorPage;
 import org.koreait.global.libs.Utils;
+import org.koreait.member.MemberInfo;
 import org.koreait.member.entities.Member;
 import org.koreait.member.libs.MemberUtil;
+import org.koreait.member.services.MemberInfoService;
 import org.koreait.member.services.MemberUpdateService;
 import org.koreait.mypage.validators.ProfileValidator;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,12 +27,14 @@ import java.util.List;
 @ApplyErrorPage
 @RequestMapping("/mypage")
 @RequiredArgsConstructor
+@SessionAttributes("profile")
 public class MypageController {
     private final Utils utils;
     private final MemberUtil memberUtil;
     private final ModelMapper modelMapper; // getter, setter 자동
     private final MemberUpdateService updateService;
     private final ProfileValidator profileValidator;
+    private final MemberInfoService infoService;
 
     @ModelAttribute("profile")
     public Member getMember() {
@@ -80,7 +83,20 @@ public class MypageController {
 
         updateService.process(form);
 
+        // 프로필 속성 변경
+        model.addAttribute("profile", memberUtil.getMember());
+
         return "redirect:/mypage"; // 회원정보 수정 완료 후 마이페이지 메인으로 이동
+    }
+
+    // 회원 정보 갱신
+    @ResponseBody
+    @GetMapping("/refresh")
+    public void refresh(Principal principal, Model model) {
+        MemberInfo memberInfo = (MemberInfo) infoService.loadUserByUsername(principal.getName());
+        memberUtil.setMember(memberInfo.getMember());
+
+        model.addAttribute("profile", memberInfo.getMember());
     }
 
     /**
@@ -95,6 +111,7 @@ public class MypageController {
 
         if (mode.equals("profile")) { // 회원정보 수정
             addCommonScript.add("fileManager");
+            addCommonScript.add("address");
             addScript.add("mypage/profile");
             pageTitle = utils.getMessage("회원정보_수정");
         }

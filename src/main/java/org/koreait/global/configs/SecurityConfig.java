@@ -6,6 +6,7 @@ import org.koreait.member.services.MemberAccessDeniedHandler;
 import org.koreait.member.services.MemberAuthenticationExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +17,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  * Spring Security 설정 - 접근 통제, 인가 기능 등
  */
 @Configuration
+@EnableMethodSecurity // 특정 메서드만 통제 가능한 기능
 public class SecurityConfig {
 
     @Bean

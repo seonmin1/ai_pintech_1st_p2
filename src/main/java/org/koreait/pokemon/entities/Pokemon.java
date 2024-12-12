@@ -32,8 +32,11 @@ public class Pokemon extends BaseEntity {
     private String types; // 타입1||타입2|| 형태로 가공
     private String abilities; // 능력1||능력2|| 형태로 가공
 
+    @Column(length = 100)
+    private String genus; // 분류
+
     @Transient // DB 반영 X
-    private List<String> _type; // 가공한 형태
+    private List<String> _types; // 가공한 형태
 
     @Transient // DB 반영 X
     private List<String> _abilities; // 가공한 형태

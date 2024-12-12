@@ -15,7 +15,8 @@ public class ApiTest2 {
 
     @Test
     void updateTest1() {
-        service.update(3); // 100개
-        service.update(4);
+        for (int i = 1; i <= 6; i++) { // 실제 포켓몬 갯수 1302개
+            service.update(i);
+        }
     }
 }

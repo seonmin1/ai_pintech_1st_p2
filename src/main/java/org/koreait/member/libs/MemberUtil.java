@@ -1,14 +1,22 @@
 package org.koreait.member.libs;
 
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.koreait.member.MemberInfo;
 import org.koreait.member.constants.Authority;
 import org.koreait.member.entities.Member;
+import org.koreait.member.services.MemberInfoService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+@Lazy
+@Setter
 @Component
 public class MemberUtil {
+
+    private Member member;
 
     /**
      * 로그인 여부 체크
@@ -34,9 +42,11 @@ public class MemberUtil {
      */
     public Member getMember() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         // 승인받고 getPrincipal이 MemberInfo의 구현체 일때
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof MemberInfo memberInfo) {
-            return memberInfo.getMember();
+
+            return member == null ? memberInfo.getMember() : member;
         }
 
         return null;

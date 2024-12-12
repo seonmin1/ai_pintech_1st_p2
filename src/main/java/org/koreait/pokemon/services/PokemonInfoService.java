@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.springframework.data.domain.Sort.Order.asc;
 import static org.springframework.data.domain.Sort.Order.desc;
 
 @Lazy
@@ -42,7 +43,7 @@ public class PokemonInfoService {
 
         // 한페이지 당 레코드 갯수
         int limit = search.getLimit();
-        limit = limit < 1 ? 20 : limit;
+        limit = limit < 1 ? 18 : limit;
 
         QPokemon pokemon = QPokemon.pokemon;
 
@@ -57,7 +58,7 @@ public class PokemonInfoService {
         }
 
         /* 검색 처리 E */
-        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(desc("seq")));
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(asc("seq"))); // 오름차순 정렬
 
         Page<Pokemon> data = pokemonRepository.findAll(andBuilder, pageable);
         List<Pokemon> items = data.getContent(); // 조회된 목록
@@ -96,7 +97,7 @@ public class PokemonInfoService {
         String types = item.getTypes();
 
         if (StringUtils.hasText(types)) {
-            item.set_type(Arrays.stream(types.split("\\|\\|")).toList());
+            item.set_types(Arrays.stream(types.split("\\|\\|")).toList());
         }
     }
 }

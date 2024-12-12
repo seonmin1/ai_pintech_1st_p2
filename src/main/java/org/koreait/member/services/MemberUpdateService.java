@@ -34,6 +34,7 @@ public class MemberUpdateService {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
     private final MemberUtil memberUtil;
+    private final MemberInfoService infoService;
 
     /**
      * 커맨드 객체의 타입에 따라서
@@ -130,6 +131,10 @@ public class MemberUpdateService {
             authoritiesRepository.saveAllAndFlush(authorities);
         }
         /* 회원 권한 업데이트 처리 E */
+
+        // 로그인 회원 정보 업데이트
+        infoService.addInfo(member);
+        memberUtil.setMember(member);
     }
 
 }
