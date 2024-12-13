@@ -29,7 +29,7 @@ public class SecurityConfig {
                     .usernameParameter("email")
                     .passwordParameter("password")
                     .failureHandler(new LoginFailureHandler())
-                    .successHandler(new LoginSuccessHandler());
+                    .successHandler(new LoginSuccessHandler()); // 성공 시 처리할 핸들러
         });
 
         http.logout(c -> {

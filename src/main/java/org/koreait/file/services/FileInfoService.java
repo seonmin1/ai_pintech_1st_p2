@@ -43,7 +43,7 @@ public class FileInfoService {
         status = Objects.requireNonNullElse(status, FileStatus.ALL); // null 일 때 ALL
 
         QFileInfo fileInfo = QFileInfo.fileInfo;
-        BooleanBuilder andBuilder = new BooleanBuilder();
+        BooleanBuilder andBuilder = new BooleanBuilder(); // 조건 추가를 위해 사용
         andBuilder.and(fileInfo.gid.eq(gid)); // gid - 필수
 
         // location 값이 있을 때 상세조회 - 선택

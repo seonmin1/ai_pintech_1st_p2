@@ -3,9 +3,7 @@ package org.koreait.member.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.MemberUtils;
 import org.koreait.global.annotations.ApplyErrorPage;
-import org.koreait.global.exceptions.BadRequestException;
 import org.koreait.global.libs.Utils;
 import org.koreait.member.MemberInfo;
 import org.koreait.member.libs.MemberUtil;
@@ -122,8 +120,10 @@ public class MemberController {
         form.setRequiredTerms3(agree.isRequiredTerms3());
         form.setOptionalTerms(agree.getOptionalTerms());
 
+        // 업데이트 서비스에 양식 전송
         updateService.process(form);
 
+        // 세션값 추가 후 완료 처리
         status.setComplete();
 
         // 회원가입 처리 완료 후 - 로그인 페이지로 이동

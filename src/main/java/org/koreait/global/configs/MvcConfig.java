@@ -10,9 +10,9 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@EnableJpaAuditing
+@EnableJpaAuditing // entity 변화 자동 감지를 위한 애노테이션
 @EnableScheduling // 주기적으로 스케줄링 하기 위한 애노테이션
-@EnableRedisHttpSession
+@EnableRedisHttpSession // redis 설정 자동화, 같은 로그인 정보 공유 = 같은 세션 공유
 public class MvcConfig implements WebMvcConfigurer {
     /**
      * 정적 경로 설정
@@ -29,11 +29,14 @@ public class MvcConfig implements WebMvcConfigurer {
     }
 
     /**
-     * PATCH, PUT, DELETE 등등
+     * PATCH, PUT, DELETE 등등 다른 메서드를 사용할 때 정의
      * PATCH 메서드로 요청을 보내는 경우
      * <form method='POST' ...>
      *     <input type='hidden' name='_method' value='PATCH'>
      * </form>
+     * - method 방식은 get, post 만 가능
+     * - 다른 방식 사용하기 위해서는 hidden 타입 선언해야함
+     * - 이때 방식은 post, form 양식 사용 필수!
      */
     @Bean
     public HiddenHttpMethodFilter hiddenHttpMethodFilter() {

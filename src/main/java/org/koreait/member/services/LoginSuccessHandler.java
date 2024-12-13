@@ -11,6 +11,9 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 
+/**
+ * 로그인 성공 시 수행할 핸들러
+ */
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {

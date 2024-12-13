@@ -2,10 +2,8 @@ package org.koreait.global.libs;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.koreait.file.controllers.RequestThumb;
 import org.koreait.file.entities.FileInfo;
 import org.koreait.file.services.FileInfoService;
-import org.koreait.file.services.ThumbnailService;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
@@ -16,6 +14,9 @@ import org.springframework.validation.FieldError;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * 편의기능
+ */
 @Component
 @RequiredArgsConstructor
 public class Utils {
@@ -26,8 +27,10 @@ public class Utils {
 
     public boolean isMobile() {
 
-        // 요청 헤더 - User-Agent 브라우저 정보
+        // 요청 헤더 - User-Agent 브라우저 정보 (모바일 or PC)
         String ua = request.getHeader("User-Agent");
+
+        // 아래 문구가 포함되었는지, 아닌지로 패턴 체크
         String pattern = ".*(iPhone|iPod|iPad|BlackBerry|Android|Windows CE|LG|MOT|SAMSUNG|SonyEricsson).*";
 
         return StringUtils.hasText(ua) && ua.matches(pattern);
@@ -47,7 +50,7 @@ public class Utils {
      * 메세지 코드로 조회된 문구
      */
     public String getMessage(String code) {
-        Locale lo = request.getLocale(); // 사용자 요청 헤더 (Accept-Language)
+        Locale lo = request.getLocale(); // 사용자 요청 헤더에서 자동으로 가져온 Accept-Language (브라우저 언어 설정)
 
         return messageSource.getMessage(code, null, lo);
     }
@@ -101,6 +104,7 @@ public class Utils {
     /**
      * 이미지 출력
      * @param mode - image : 이미지 태그로 출력, background : 배경 이미지 형태로 출력
+     * 다양한 형태로 사용하기 위해서 오버로드 함
      */
     public String showImage(Long seq, int width, int height, String mode, String className) {
 

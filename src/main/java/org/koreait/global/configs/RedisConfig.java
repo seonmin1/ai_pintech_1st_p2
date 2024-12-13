@@ -14,6 +14,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 public class RedisConfig {
 
+    // yml 파일에 설정한 주소 값 설정
     @Value("${spring.data.redis.host}")
     private String host;
 

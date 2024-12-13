@@ -45,7 +45,13 @@ public class MemberUtil {
         // 승인받고 getPrincipal이 MemberInfo의 구현체 일때
         if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof MemberInfo memberInfo) {
 
-            return member == null ? memberInfo.getMember() : member;
+            if (member == null) {
+                setMember(memberInfo.getMember());
+
+                return member;
+            } else {
+                return member;
+            }
         }
 
         return null;

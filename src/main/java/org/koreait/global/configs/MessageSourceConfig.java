@@ -16,7 +16,7 @@ public class MessageSourceConfig {
         ResourceBundleMessageSource ms = new ResourceBundleMessageSource();
         ms.addBasenames("messages.commons", "messages.validations", "messages.errors", "messages.pokemon");
         ms.setDefaultEncoding("UTF-8");
-        ms.setUseCodeAsDefaultMessage(true);
+        ms.setUseCodeAsDefaultMessage(true); // 문구가 없을 땐 코드 형태로 출력
 
         return ms;
     }

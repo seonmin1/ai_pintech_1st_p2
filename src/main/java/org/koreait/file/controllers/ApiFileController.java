@@ -49,7 +49,7 @@ public class ApiFileController {
             @Parameter(name = "gid", description = "파일 그룹 ID", required = true), // 필수
             @Parameter(name = "location", description = "파일 그룹 내에서 위치 코드"),
             @Parameter(name = "file", description = "업로드 파일, 복수개 전송 가능", required = true) // 필수
-    })
+    }) // 요청 명세 설정
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/upload")
     public JSONData upload(@RequestPart("file") MultipartFile[] files, @Valid RequestUpload form, Errors errors) { // 형식을 JSONData로 통일

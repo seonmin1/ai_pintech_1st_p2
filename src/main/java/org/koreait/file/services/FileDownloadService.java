@@ -28,7 +28,6 @@ public class FileDownloadService {
 
         FileInfo item = infoService.get(seq);
 
-        String filePath = item.getFilePath();
         String fileName = item.getFileName();
 
         // 문자(3바이트) 출력 시 깨질 위험이 있으므로 2바이트 형태의 유니코드로 변환 - ISO_8859_1
@@ -61,6 +60,7 @@ public class FileDownloadService {
 
             response.setContentLengthLong(file.length());
 
+            // 결과를 Body 쪽에 출력
             OutputStream out = response.getOutputStream();
             out.write(bis.readAllBytes());
 

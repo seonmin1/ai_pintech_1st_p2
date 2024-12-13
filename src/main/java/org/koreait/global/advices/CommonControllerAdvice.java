@@ -19,6 +19,7 @@ import java.util.Map;
 
 /**
  * @Controller 클래스만 한정
+ * 에러페이지에 대한 공통 처리부분
  */
 @ControllerAdvice(annotations = ApplyErrorPage.class)
 @RequiredArgsConstructor
@@ -39,6 +40,7 @@ public class CommonControllerAdvice {
         data.put("querystring", request.getQueryString());
         data.put("exception", e);
 
+        // 공통 예외처리 안에서 세부내용 추가
         if (e instanceof CommonException commonException) {
             status = commonException.getStatus();
             message = commonException.isErrorCode() ? utils.getMessage(message) : message;

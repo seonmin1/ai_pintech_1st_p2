@@ -13,7 +13,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  */
 @Data
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener.class) // 변화감지
+@EntityListeners(AuditingEntityListener.class) // 변화감지를 통해 값을 자동으로 넣어줌
 public abstract class BaseMemberEntity extends BaseEntity {
 
     @CreatedBy
