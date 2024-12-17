@@ -37,19 +37,34 @@ commonLib.ajaxLoad = function(url, callback, method = 'GET', data, headers) { //
         options.body = data instanceof FormData ? data : JSON.stringify(data); // FormData 형식일 때 그대로, 아니면 JSON 형식으로 변환
     }
 
-    fetch(url, options)
-        .then(res => res.json())
-        .then(json => {
-            if (json.success) { // 응답 성공 (처리 성공) - 후속 처리 callback
-                if (typeof callback === 'function') { // 콜백 함수가 정의된 경우
-                    callback(json.data);
+    return new Promise((resolve, reject) => {
+        fetch(url, options)
+            .then(res => {
+                if (res.status !== 204)
+                    return res.json();
+                else {
+                    resolve();
                 }
-                return;
-            }
+            })
+            .then(json => {
+                if (json?.success) { // 응답 성공 (처리 성공) - 후속 처리 callback
+                    if (typeof callback === 'function') { // 콜백 함수가 정의된 경우
+                        callback(json.data);
+                    }
 
-            alert(json.message); // 실패 시 alert 메세지 출력
-        })
-        .catch(err => console.error(err))
+                    resolve(json);
+
+                    return;
+                }
+
+                reject(json); // 처리 실패 시
+            })
+            .catch(err => {
+                console.error(err);
+
+                reject(err); // 응답 실패 시
+            });
+    }); // Promise
 };
 
 window.addEventListener("DOMContentLoaded", function() {

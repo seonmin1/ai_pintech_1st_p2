@@ -142,10 +142,14 @@ public class MemberController {
 
         if (mode.equals("login")) { // 로그인 공통 처리
             pageTitle = utils.getMessage("로그인");
+
         } else if (mode.equals("join")) { // 회원가입 공통 처리
             pageTitle = utils.getMessage("회원가입");
             addCommonScript.add("address"); // static - common - address.js
+            addCommonScript.add("emailAuth");
+
             addScript.add("member/join");
+
         } else if (mode.equals("agree")) {
             pageTitle = utils.getMessage("약관동의");
             // 약관 동의 페이지에 최초 접근 시 약관 선택을 초기화

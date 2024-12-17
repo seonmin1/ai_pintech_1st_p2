@@ -9,9 +9,8 @@ import org.koreait.global.exceptions.BadRequestException;
 import org.koreait.global.libs.Utils;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,12 +41,13 @@ public class EmailAuthService {
          * 만료시간을 3분으로 기록
          * 사용자의 입력을 검증하기 위해서 세션에 인증코드와 만료시간을 기록
          */
-        int authCode = random.nextInt(99999); // 5자리 정수를 랜덤으로 받음
+        Integer authCode = random.nextInt(99999); // 5자리 정수를 랜덤으로 받음
 
-        long expired = Instant.EPOCH.getEpochSecond() + 60 * 3; // 1초 단위로 카운팅 - 60 * 3 = 3분
+        LocalDateTime expired = LocalDateTime.now().plusMinutes(3L); // 만료시간을 현재시간에서 3분뒤로
 
         session.setAttribute("authCode", authCode); // 인증코드
         session.setAttribute("expiredTime", expired); // 만료시간
+        session.setAttribute("authCodeVerified", false);
 
         Map<String, Object> tplData = new HashMap<>();
         tplData.put("authCode", authCode);
@@ -69,16 +69,22 @@ public class EmailAuthService {
             throw new BadRequestException(utils.getMessage("NotBlank.authCode"));
         }
 
-        long expired = (long) session.getAttribute("expiredTime");
-        int authCode = (int) session.getAttribute("authCode");
+        LocalDateTime expired = (LocalDateTime) session.getAttribute("expiredTime");
+        Integer authCode = (Integer) session.getAttribute("authCode");
 
-        long now =  Instant.EPOCH.getEpochSecond();
-        if (expired < now) { // 코드가 만료된 경우
+        if (expired != null && expired.isBefore(LocalDateTime.now())) { // 코드가 만료된 경우
             throw new AuthCodeExpiredException();
         }
 
-        if (code.equals(authCode)) { // 인증 코드가 일치하지 않는 경우
+        if (authCode == null) {
+            throw new BadRequestException();
+        }
+
+        if (!code.equals(authCode)) { // 인증 코드가 일치하지 않는 경우
             throw new AuthCodeMismatchException();
         }
+
+        // 인증 성공 상태 세션에 기록
+        session.setAttribute("authCodeVerified", true);
     }
 }
