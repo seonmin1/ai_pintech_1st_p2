@@ -62,6 +62,11 @@ public class PokemonInfoService {
                     .concat(pokemon.flavorText).contains(skey));
         }
 
+        List<Long> seq = search.getSeq();
+        if (seq != null && !seq.isEmpty()) {
+            andBuilder.and(pokemon.seq.in(seq));
+        }
+
         /* 검색 처리 E */
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(asc("seq"))); // 오름차순 정렬
 
