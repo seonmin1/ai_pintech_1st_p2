@@ -3,6 +3,7 @@ window.addEventListener("DOMContentLoaded", function() {
     const sendButton = document.getElementById("send-auth-code");
     const authCodeEl = document.getElementById("auth-code");
     const verifyButton = document.getElementById("verify-auth-code");
+    const timerEl = document.querySelector(".auth-box .timer");
 
     const { emailAuth } = commonLib;
 
@@ -15,7 +16,7 @@ window.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // 인증코드 전송 버튼 처리
+    /* 인증코드 전송 처리 S */
     sendButton.addEventListener("click", function() {
         const email = frmJoin.email.value.trim();
         if (!email) {
@@ -41,16 +42,18 @@ window.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+
     /**
     * 타이머 출력 갱신
     */
     function updateTimer(seconds) {
-        let timerStr = "00:00";
+        let timerStr = "";
         if (seconds > 0) {
             const min = Math.floor(seconds / 60); // 버림
             const sec = seconds - min * 60; // 남은 초
             timerStr = `${('' + min).padStart(2, '0')}:${('' + sec).padStart(2, '0')}`;
         } else { // 타이머가 0이 되면 다시 이메일 변경 가능하게 처리, 인증 코드 입력 불가 처리, 인증하기 버튼 감추기
+            timerStr = "00:00";
             frmJoin.email.removeAttribute("readonly");
             authCodeEl.value = ""; // 값을 빈 문자열로 설정
             authCodeEl.disabled = true;
@@ -58,11 +61,41 @@ window.addEventListener("DOMContentLoaded", function() {
             verifyButton.classList.add("dn");
         }
 
-        const timerEl = document.querySelector(".auth-box .timer");
         if (timerEl) {
             timerEl.innerHTML = timerStr;
         }
     }
+    /* 인증코드 전송 처리 E */
+
+    /* 인증코드 확인 처리 S */
+    verifyButton.addEventListener("click", function() {
+        const authCode = authCodeEl.value;
+        if (!authCode || ('' + authCode).length < 5) { // 인증코드가 없거나 5자리 미만일 때
+            alert("인증코드를 입력하세요.");
+            authCodeEl.focus();
+            return;
+        }
+
+        const el = document.querySelector(".auth-box .message");
+        el.classList.remove("dn");
+
+        emailAuth.verify(authCode, () => {
+            // 인증 성공 시
+            /**
+            * 1. "인증되었습니다." 메세지 출력
+            * 2. authCodeEl, verifyButton, sendButton, timer 제거
+            */
+            el.innerText = "인증되었습니다.";
+            const authBoxEl = document.querySelector(".auth-box").children[0];
+            authBoxEl.parentElement.removeChild(authBoxEl);
+
+        }, (err) => {
+            // 인증 실패 시
+            el.innerText = err.message;
+        });
+
+    });
+    /* 인증코드 확인 처리 E */
 });
 
 /**

@@ -41,7 +41,7 @@ public class EmailAuthService {
          * 만료시간을 3분으로 기록
          * 사용자의 입력을 검증하기 위해서 세션에 인증코드와 만료시간을 기록
          */
-        Integer authCode = random.nextInt(99999); // 5자리 정수를 랜덤으로 받음
+        Integer authCode = random.nextInt(10000,99999); // 5자리 정수를 랜덤으로 받음
 
         LocalDateTime expired = LocalDateTime.now().plusMinutes(3L); // 만료시간을 현재시간에서 3분뒤로
 
