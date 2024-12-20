@@ -1,12 +1,9 @@
 package org.koreait.member.libs;
 
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.koreait.member.MemberInfo;
 import org.koreait.member.constants.Authority;
 import org.koreait.member.entities.Member;
-import org.koreait.member.services.MemberInfoService;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -30,6 +27,7 @@ public class MemberUtil {
      * 권한 - MANAGER, ADMIN
      */
     public boolean isAdmin() {
+
         return isLogin() &&
                 getMember().getAuthorities().stream()
                         .anyMatch(a -> a.getAuthority() == Authority.ADMIN || a.getAuthority()  == Authority.MANAGER);
