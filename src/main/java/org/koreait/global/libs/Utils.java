@@ -1,6 +1,7 @@
 package org.koreait.global.libs;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.koreait.file.entities.FileInfo;
 import org.koreait.file.services.FileInfoService;
@@ -171,5 +172,18 @@ public class Utils {
         } catch (Exception e) {}
 
         return ""; // 오류 방지로 빈문자열 넣어줌
+    }
+    /**
+     * 관리자페이지 수정 및 저장 성공 시
+     * 메세지를 세션쪽에 저장해서 임시 팝업으로 띄움
+     */
+    public void showSessionMessage(String message) {
+        HttpSession session = request.getSession();
+        session.setAttribute("showMessage", message);
+    }
+
+    public void removeSessionMessage() {
+        HttpSession session = request.getSession();
+        session.removeAttribute("showMessage");
     }
 }
