@@ -1,12 +1,12 @@
 package org.koreait.mypage.controllers;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.koreait.global.annotations.ApplyErrorPage;
 import org.koreait.global.libs.Utils;
 import org.koreait.global.paging.CommonSearch;
 import org.koreait.global.paging.ListData;
-import org.koreait.global.paging.Pagination;
 import org.koreait.member.MemberInfo;
 import org.koreait.member.entities.Member;
 import org.koreait.member.libs.MemberUtil;
@@ -100,9 +100,10 @@ public class MypageController {
     // 회원 정보 갱신
     @ResponseBody
     @GetMapping("/refresh")
-    public void refresh(Principal principal, Model model) {
+    public void refresh(Principal principal, Model model, HttpSession session) {
+
         MemberInfo memberInfo = (MemberInfo) infoService.loadUserByUsername(principal.getName());
-        memberUtil.setMember(memberInfo.getMember());
+        session.setAttribute("member", memberInfo.getMember());
 
         model.addAttribute("profile", memberInfo.getMember());
     }

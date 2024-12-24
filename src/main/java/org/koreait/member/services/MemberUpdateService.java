@@ -1,5 +1,6 @@
 package org.koreait.member.services;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.koreait.member.constants.Authority;
 import org.koreait.member.controllers.RequestJoin;
@@ -12,7 +13,6 @@ import org.koreait.member.repositories.MemberRepository;
 import org.koreait.mypage.controllers.RequestProfile;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +20,6 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Lazy // 지연로딩 - 최초로 빈을 사용할 때 생성
 @Service
@@ -35,6 +33,7 @@ public class MemberUpdateService {
     private final ModelMapper modelMapper;
     private final MemberUtil memberUtil;
     private final MemberInfoService infoService;
+    private final HttpSession session;
 
     /**
      * 커맨드 객체의 타입에 따라서
@@ -114,8 +113,8 @@ public class MemberUpdateService {
         // 로그인 회원 정보 업데이트
         Member _member = memberRepository.findByEmail(member.getEmail()).orElse(null);
         if (_member != null) {
-            infoService.addInfo(member);
-            memberUtil.setMember(member);
+            infoService.addInfo(_member);
+            session.setAttribute("member", _member);
         }
     }
 

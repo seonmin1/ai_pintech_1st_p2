@@ -1,5 +1,6 @@
 package org.koreait.member.controllers;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +12,6 @@ import org.koreait.member.services.MemberInfoService;
 import org.koreait.member.services.MemberUpdateService;
 import org.koreait.member.validators.JoinValidator;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -137,6 +136,15 @@ public class MemberController {
 
         // 회원가입 처리 완료 후 - 로그인 페이지로 이동
         return "redirect:/member/login";
+    }
+
+    @ResponseBody
+    @GetMapping("/refresh")
+    @PreAuthorize("isAuthenticated()")
+    public void refresh(Principal principal, HttpSession session) {
+
+        MemberInfo memberInfo = (MemberInfo) infoService.loadUserByUsername(principal.getName());
+        session.setAttribute("member", memberInfo.getMember());
     }
 
     /**
