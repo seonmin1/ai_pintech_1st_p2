@@ -1,12 +1,18 @@
 package org.koreait.global.entities;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 관리자 페이지 - 약관동의
  */
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Terms {
 
     @NotBlank

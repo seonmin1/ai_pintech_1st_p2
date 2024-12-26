@@ -77,6 +77,8 @@ public class SecurityConfig {
         });
         /* 자동 로그인 설정 E */
 
+        http.headers(c -> c.frameOptions(o -> o.sameOrigin())); // admin - iframe 사용 시 설정
+
         return http.build(); // 설정 무력화
     }
 

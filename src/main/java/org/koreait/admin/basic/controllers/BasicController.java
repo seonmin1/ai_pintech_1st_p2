@@ -2,6 +2,8 @@ package org.koreait.admin.basic.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.koreait.admin.basic.services.TermsInfoService;
+import org.koreait.admin.basic.services.TermsUpdateService;
 import org.koreait.admin.global.menu.MenuDetail;
 import org.koreait.admin.global.menu.Menus;
 import org.koreait.global.annotations.ApplyErrorPage;
@@ -28,6 +30,9 @@ import java.util.Objects;
 public class BasicController {
 
     private final CodeValueService codeValueService;
+    private final TermsUpdateService termsUpdateService;
+    private final TermsInfoService termsInfoService;
+
     private final Utils utils;
 
     @ModelAttribute("menuCode")
@@ -73,6 +78,9 @@ public class BasicController {
     public String terms(@ModelAttribute Terms form, Model model) {
         commonProcess("terms", model);
 
+        List<Terms> items = termsInfoService.getList();
+        model.addAttribute("items", items);
+
         return "admin/basic/terms";
     }
 
@@ -85,7 +93,11 @@ public class BasicController {
             return "admin/basic/terms";
         }
 
-        return "admin/basic/terms"; // 임시
+        termsUpdateService.save(form);
+
+        model.addAttribute("script", "parent.location.reload();");
+
+        return "common/_execute_script";
     }
 
     /**
