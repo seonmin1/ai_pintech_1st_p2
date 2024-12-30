@@ -1,7 +1,9 @@
 package org.koreait.mypage.validators;
 
 import org.koreait.global.validators.PasswordValidator;
+import org.koreait.member.libs.MemberUtil;
 import org.koreait.mypage.controllers.RequestProfile;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -15,6 +17,9 @@ import org.springframework.validation.Validator;
 @Component
 public class ProfileValidator implements Validator, PasswordValidator {
 
+    @Autowired
+    private MemberUtil memberUtil;
+
     @Override
     public boolean supports(Class<?> clazz) {
         return clazz.isAssignableFrom(RequestProfile.class);
@@ -25,6 +30,13 @@ public class ProfileValidator implements Validator, PasswordValidator {
         RequestProfile form = (RequestProfile) target;
         String password = form.getPassword();
         String confirmPassword = form.getConfirmPassword();
+        String email = form.getEmail();
+        String mode = form.getMode();
+
+        // 관리자 페이지에서 유입된 데이터이지만 이메일 데이터가 없을 때
+        if (StringUtils.hasText(mode) && mode.equals("admin") && !StringUtils.hasText(email)) {
+            errors.rejectValue("email", "NotBlank");
+        }
 
         // 비밀번호가 입력안되면 검증 및 수정 X
         if (!StringUtils.hasText(password)) {

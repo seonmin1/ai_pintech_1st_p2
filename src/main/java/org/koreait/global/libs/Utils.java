@@ -200,4 +200,9 @@ public class Utils {
         return text.replaceAll("\\r", "")
                 .replaceAll("\\n", "<br>");
     }
+
+    // admin 페이지 팝업
+    public String popup(String url, int width, int height) {
+        return String.format("commonLib.popup('%s', %d, %d)", url, width, height);
+    }
 }
