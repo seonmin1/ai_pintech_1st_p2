@@ -3,6 +3,7 @@ package org.koreait.dl.controllers;
 import lombok.RequiredArgsConstructor;
 import org.koreait.dl.entities.TrainItem;
 import org.koreait.dl.services.PredictService;
+import org.koreait.dl.services.SentimentService;
 import org.koreait.dl.services.TrainService;
 import org.koreait.global.rests.JSONData;
 import org.springframework.context.annotation.Profile;
@@ -23,6 +24,7 @@ public class ApiDlController {
 
     private final PredictService predictService;
     private final TrainService trainService;
+    private final SentimentService sentimentService;
 
     // 데이터를 파이썬으로 보내기 위한 메서드
     @GetMapping("/data")
@@ -38,5 +40,12 @@ public class ApiDlController {
         int[] predictions = predictService.predict(items);
 
         return new JSONData(predictions);
+    }
+
+    @PostMapping("/sentiment")
+    public JSONData sentiment(@RequestParam("items") List<String> items) {
+        double[] predictions = sentimentService.predict(items);
+
+        return new JSONData(predictions); // JSON 형식으로 변환
     }
 }
