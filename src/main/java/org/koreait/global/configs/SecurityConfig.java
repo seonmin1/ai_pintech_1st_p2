@@ -54,7 +54,7 @@ public class SecurityConfig {
          * hasAnyRole(...)
          */
         http.authorizeHttpRequests(c -> {
-            c.requestMatchers("/mypage/**").authenticated() // 인증 회원 - 마이페이지를 포함한 전체 하위경로 (**)
+            c.requestMatchers("/mypage/**", "/message/**").authenticated() // 인증 회원 - 마이페이지를 포함한 전체 하위경로 (**)
                     .requestMatchers("/member/login", "/member/join", "/member/agree").anonymous() // 미인증 회원
                     .requestMatchers("/admin/**").hasAnyAuthority("MANAGER", "ADMIN") // 관리자 페이지는 MANAGER, ADMIN 권한만 접근 가능
                     .anyRequest().permitAll(); // 나머지 페이지는 모두 접근
