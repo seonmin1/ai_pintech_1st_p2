@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Lazy
 @Service
@@ -29,7 +30,7 @@ public class SentimentService {
 
     public double[] predict(List<String> items) {
         try {
-            String data = om.writeValueAsString(items);
+            String data = String.join("__", items);
 
             ProcessBuilder builder = new ProcessBuilder(runPath, scriptPath + "naver.py", bertPath, data);
             Process process = builder.start();
