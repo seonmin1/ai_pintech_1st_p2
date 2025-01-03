@@ -5,6 +5,7 @@ import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.koreait.file.services.FileInfoService;
 import org.koreait.global.libs.Utils;
 import org.koreait.global.paging.ListData;
 import org.koreait.global.paging.Pagination;
@@ -29,6 +30,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MessageInfoService {
 
+    private final FileInfoService fileInfoService;
     private final MessageRepository messageRepository;
     private final JPAQueryFactory queryFactory;
     private final HttpServletRequest request;
@@ -114,6 +116,8 @@ public class MessageInfoService {
 
     // 추가 정보 처리
     private void addInfo(Message item) {
-
+        String gid = item.getGid();
+        item.setEditorImages(fileInfoService.getList(gid, "editor"));
+        item.setAttachFiles(fileInfoService.getList(gid, "attach"));
     }
 }
