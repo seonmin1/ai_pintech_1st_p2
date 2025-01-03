@@ -77,8 +77,9 @@ public class MessageInfoService {
         mode = StringUtils.hasText(mode) ? mode : "receive";
 
         // send - 보낸 쪽지 목록, receive - 받은 쪽지 목록
-        // mode 값이 없을 땐 받은 쪽지 목록
+        // mode 값이 없을 땐 받은 쪽지 목록이 기본값
         andBuilder.and(mode.equals("send") ? message.sender.eq(member) : message.receiver.eq(member));
+        andBuilder.and(mode.equals("send") ? message.deletedBySender.eq(false) : message.deletedByReceiver.eq(false));
 
         // 보낸사람 조건 검색
         List<String> sender = search.getSender();
@@ -119,5 +120,7 @@ public class MessageInfoService {
         String gid = item.getGid();
         item.setEditorImages(fileInfoService.getList(gid, "editor"));
         item.setAttachFiles(fileInfoService.getList(gid, "attach"));
+
+        item.setReceived(item.getReceiver().getSeq().equals(memberUtil.getMember().getSeq())); // 수신한 메일 여부 확인
     }
 }

@@ -51,4 +51,11 @@ public class Message extends BaseEntity {
 
     @Transient
     private List<FileInfo> attachFiles;
+
+    @Transient
+    private boolean isReceived; // 받은 쪽지 여부 확인
+
+    private boolean deletedBySender; // 보내는 쪽에서 쪽지를 삭제한 경우
+
+    private boolean deletedByReceiver; // 받는 쪽에서 쪽지를 삭제한 경우
 }
