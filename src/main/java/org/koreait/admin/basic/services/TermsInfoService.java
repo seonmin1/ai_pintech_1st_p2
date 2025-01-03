@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.data.domain.Sort.Order.asc;
 
@@ -27,7 +28,7 @@ public class TermsInfoService {
 
     // 약관 개별 조회
     public Terms get(String code) {
-        return service.get(String.format("term_%s", code), Terms.class);
+        return Objects.requireNonNullElseGet(service.get(String.format("term_%s", code), Terms.class), Terms::new);
     }
 
     // 목록 전체 조회

@@ -15,7 +15,7 @@ import static org.mockito.BDDMockito.*;
 @ActiveProfiles({"default", "test"})
 public class PaginationTest {
 
-    @Mock // 가짜 객체
+    @Mock // 가짜 객체 (모의 객체)
     private HttpServletRequest request;
 
     @BeforeEach

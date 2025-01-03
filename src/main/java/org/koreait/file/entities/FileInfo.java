@@ -1,5 +1,6 @@
 package org.koreait.file.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.koreait.global.entities.BaseMemberEntity;
@@ -16,6 +17,7 @@ import java.io.Serializable;
         @Index(name = "idx_gid", columnList = "gid, createdAt"),
         @Index(name = "idx_gid_location", columnList = "gid, location, createdAt")
 }) // Index - 선택도가 낮을수록 유리, 높으면 사용하지 않는 것이 나음
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FileInfo extends BaseMemberEntity implements Serializable {
 
     @Id @GeneratedValue // 증감 번호 등록 시 사용하는 애너테이션

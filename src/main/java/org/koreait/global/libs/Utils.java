@@ -197,8 +197,8 @@ public class Utils {
 
     // 회원가입 약관 - 줄개행문자(\n 또는 \r\n)를 br 태그로 변환
     public String nl2br(String text) {
-        return text.replaceAll("\\r", "")
-                .replaceAll("\\n", "<br>");
+        return text == null ? "" : text.replaceAll("\\r", "")
+                                        .replaceAll("\\n", "<br>");
     }
 
     // admin 페이지 팝업
