@@ -11,6 +11,7 @@ import org.koreait.global.paging.ListData;
 import org.koreait.global.paging.Pagination;
 import org.koreait.member.entities.Member;
 import org.koreait.member.libs.MemberUtil;
+import org.koreait.message.constants.MessageStatus;
 import org.koreait.message.controllers.MessageSearch;
 import org.koreait.message.entities.Message;
 import org.koreait.message.entities.QMessage;
@@ -46,9 +47,14 @@ public class MessageInfoService {
 
         if (!memberUtil.isAdmin()) {
             Member member = memberUtil.getMember();
+            BooleanBuilder orBuilder2 = new BooleanBuilder();
+            BooleanBuilder andBuilder = new BooleanBuilder();
+
+            orBuilder2.or(andBuilder.and(message.notice.eq(true)).and(message.receiver.isNull())) // 공지 쪽지
+                            .or(message.receiver.eq(member)); // 받은 쪽지
 
             orBuilder.or(message.sender.eq(member))
-                    .or(message.receiver.eq(member));
+                            .or(orBuilder2);
 
             builder.and(orBuilder);
         }
@@ -78,7 +84,18 @@ public class MessageInfoService {
 
         // send - 보낸 쪽지 목록, receive - 받은 쪽지 목록
         // mode 값이 없을 땐 받은 쪽지 목록이 기본값
-        andBuilder.and(mode.equals("send") ? message.sender.eq(member) : message.receiver.eq(member));
+        if (mode.equals("send")) {
+            andBuilder.and(message.sender.eq(member));
+        } else {
+            BooleanBuilder orBuilder = new BooleanBuilder();
+            BooleanBuilder andBuilder1 = new BooleanBuilder();
+            BooleanBuilder andBuilder2 = new BooleanBuilder();
+
+            orBuilder.or(andBuilder1.and(message.notice.eq(true)).and(message.receiver.isNull())) // 공지쪽지
+                    .or(message.receiver.eq(member));
+            andBuilder2.and(orBuilder);
+        }
+
         andBuilder.and(mode.equals("send") ? message.deletedBySender.eq(false) : message.deletedByReceiver.eq(false));
 
         // 보낸사람 조건 검색
@@ -104,7 +121,7 @@ public class MessageInfoService {
                 .where(andBuilder)
                 .limit(limit)
                 .offset(offset)
-                .orderBy(message.createdAt.desc()) // 수신 순서로 한정
+                .orderBy(message.notice.desc(), message.createdAt.desc()) // 1차 정렬 - 공지사항, 2차 정렬 - 수신 순서
                 .fetch();
 
         items.forEach(this::addInfo); // 추가 정보 처리
@@ -121,6 +138,28 @@ public class MessageInfoService {
         item.setEditorImages(fileInfoService.getList(gid, "editor"));
         item.setAttachFiles(fileInfoService.getList(gid, "attach"));
 
-        item.setReceived(item.getReceiver().getSeq().equals(memberUtil.getMember().getSeq())); // 수신한 메일 여부 확인
+        Member member = memberUtil.getMember();
+
+        item.setReceived(
+                (item.isNotice() && item.getReceiver() == null) ||
+                item.getReceiver().getSeq().equals(member.getSeq())
+        ); // 수신한 메일 여부 확인
+
+        // 삭제 가능 여부
+        boolean deletable = (item.isNotice() && memberUtil.isAdmin())
+                || (!item.isNotice() &&(item.getSender().getSeq().equals(member.getSeq())
+                || item.getReceiver().getSeq().equals(member.getSeq())));
+        item.setDeletable(deletable);
+    }
+
+    // 미열람 메세지 갯수
+    public long totalUnRead() {
+        BooleanBuilder andBuilder = new BooleanBuilder();
+        QMessage message = QMessage.message;
+
+        andBuilder.and(message.receiver.eq(memberUtil.getMember()))
+                .and(message.status.eq(MessageStatus.UNREAD));
+
+        return messageRepository.count(andBuilder);
     }
 }

@@ -1,5 +1,6 @@
 package org.koreait.member.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
@@ -58,6 +59,7 @@ public class Member extends BaseEntity implements Serializable {
     @Column(length = 50)
     private String optionalTerms; // 선택 약관
 
+    @JsonIgnore // 순환 참조 문제 해결 (참조 끊김)
     @ToString.Exclude // 순환 참조 배제
     @OneToMany(mappedBy = "member") // 기본 fetch 타입은 LAZY 이므로 따로 설정 X
     private List<Authorities> authorities;

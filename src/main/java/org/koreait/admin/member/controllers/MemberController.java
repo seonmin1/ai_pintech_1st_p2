@@ -24,7 +24,7 @@ import java.util.List;
 @ApplyErrorPage
 @RequiredArgsConstructor
 @RequestMapping("/admin/member")
-@Controller("adminMemberController") // 충돌방지로 새 이름 설정
+@Controller("adminMemberController") // 같은 이름 충돌방지로 새 이름 설정
 public class MemberController implements SubMenus { // 반복되는 부분을 정의한 인터페이스 구현
 
     private final Utils utils;

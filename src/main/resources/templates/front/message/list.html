@@ -33,7 +33,8 @@
     <ul class="items">
         <li th:if="${items != null && !items.isEmpty()}" class="item" th:each="item : ${items}" th:object="${item}">
             <a th:href="@{/message/view/{seq}(seq=*{seq})}" class="subject">
-                <span class="badge" th:text="*{#messages.msg(status)}"></span> <!-- 열람, 미열람 상태 -->
+                <span class="badge notice" th:if="*{notice}" th:text="#{공지}"></span> <!-- 공지 쪽지 -->
+                <span class="badge" th:unless="*{notice}" th:text="*{#messages.msg(status)}"></span> <!-- 일반 쪽지 - 열람, 미열람 상태 -->
                 <th:block th:text="*{subject}"></th:block>
             </a>
             <div class="info">

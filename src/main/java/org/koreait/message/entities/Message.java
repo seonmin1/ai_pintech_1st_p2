@@ -15,8 +15,8 @@ import java.util.List;
 @Data
 @Entity
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor @AllArgsConstructor
+@Table(indexes = @Index(name = "idx_notice_created_at", columnList = "notice DESC, createdAt DESC")) // 쪽지 조회 순서 부여 - 1차 공지, 2차 수신 순서
 public class Message extends BaseEntity {
 
     @Id @GeneratedValue
@@ -53,7 +53,10 @@ public class Message extends BaseEntity {
     private List<FileInfo> attachFiles;
 
     @Transient
-    private boolean isReceived; // 받은 쪽지 여부 확인
+    private boolean received; // 받은 쪽지 여부 확인
+
+    @Transient
+    private boolean deletable; // 삭제 가능 여부
 
     private boolean deletedBySender; // 보내는 쪽에서 쪽지를 삭제한 경우
 

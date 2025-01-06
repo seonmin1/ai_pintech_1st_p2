@@ -37,9 +37,11 @@ public class MessageValidator implements Validator {
             form.setNotice(notice);
         }
 
-        if (!memberUtil.isAdmin() && !notice && !StringUtils.hasText(email)) { // 관리자가 아니고 공지메일이 아니면서 이메일이 없을 때
+        if (!memberUtil.isAdmin() && !notice && !StringUtils.hasText(email)) { // 관리자가 아니고 공지쪽지가 아니면서 이메일이 없을 때
             errors.rejectValue("email", "NotBlank");
-        } else if (!memberRepository.exists(email)) { // 수신 회원이 존재하지 않을 경우
+        }
+
+        if (!notice && !memberRepository.exists(email)) { // 공지쪽지가 아니고 이메일이 없을 때
             errors.reject("NotFound.member");
         }
     }
