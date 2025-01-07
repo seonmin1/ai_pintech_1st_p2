@@ -18,6 +18,8 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Objects;
 
+import static org.springframework.data.domain.Sort.Order.asc;
+
 /**
  * FileInfoRepository
  */
@@ -56,7 +58,7 @@ public class FileInfoService {
             andBuilder.and(fileInfo.done.eq(status == FileStatus.DONE));
         }
 
-        List<FileInfo> items = (List<FileInfo>) infoRepository.findAll(andBuilder, Sort.by(Sort.Order.asc("createdAt")));
+        List<FileInfo> items = (List<FileInfo>) infoRepository.findAll(andBuilder, Sort.by(asc("listOrder"), asc("createdAt")));
 
         // 추가 정보 처리
         items.forEach(this::addInfo);

@@ -14,9 +14,9 @@ import java.io.Serializable;
 @Data
 @Entity
 @Table(indexes = {
-        @Index(name = "idx_gid", columnList = "gid, createdAt"),
-        @Index(name = "idx_gid_location", columnList = "gid, location, createdAt")
-}) // Index - 선택도가 낮을수록 유리, 높으면 사용하지 않는 것이 나음
+        @Index(name = "idx_gid", columnList = "gid, listOrder, createdAt"),
+        @Index(name = "idx_gid_location", columnList = "gid, location, listOrder, createdAt")
+}) // Index - 선택도가 낮을수록 유리, 높으면 사용하지 않는 것이 나음, 정렬순서
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FileInfo extends BaseMemberEntity implements Serializable {
 
@@ -48,6 +48,9 @@ public class FileInfo extends BaseMemberEntity implements Serializable {
     private String thumbUrl; // 썸네일 기본 URL
 
     private boolean done; // 파일과 연관된 작업이 완료되었는지 여부
+
+    private boolean selected; // 노출을 1개 하는 경우 대표이미지 선택
+    private long listOrder; // 정렬 순서, 오름 차순 정렬
 
     // 이미지 형식 여부 체크
     public boolean isImage() {
