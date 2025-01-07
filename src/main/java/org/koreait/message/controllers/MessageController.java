@@ -24,12 +24,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-/**
- * 쪽지보내기 기능 - 회원 / 관리자
- * 작성, 조회, 삭제
- */
 @Controller
-@ApplyErrorPage // 에러페이지 표시
+@ApplyErrorPage
 @RequestMapping("/message")
 @RequiredArgsConstructor
 public class MessageController {
@@ -48,7 +44,11 @@ public class MessageController {
         return List.of("message/style");
     }
 
-    // 쪽지 작성 양식
+    /**
+     * 쪽지 작성 양식
+     *
+     * @return
+     */
     @GetMapping
     public String form(@ModelAttribute RequestMessage form, Model model) {
         commonProcess("send", model);
@@ -58,7 +58,11 @@ public class MessageController {
         return utils.tpl("message/form");
     }
 
-    // 쪽지 작성 - 작성 후 보낸 쪽지 목록으로 이동
+    /**
+     * 쪽지 작성
+     *
+     * @return
+     */
     @PostMapping
     public String process(@Valid RequestMessage form, Errors errors, Model model, HttpServletRequest request) {
         commonProcess("send", model);
@@ -75,8 +79,7 @@ public class MessageController {
         }
 
         Message message = sendService.process(form);
-        long totalUnRead = infoService.totalUnRead();
-
+        long totalUnRead = infoService.totalUnRead(form.getEmail());
         Map<String, Object> data = new HashMap<>();
         data.put("item", message);
         data.put("totalUnRead", totalUnRead);
@@ -87,16 +90,22 @@ public class MessageController {
             String json = om.writeValueAsString(data);
             sb.append(String.format("if (typeof webSocket != undefined) { webSocket.onopen = () => webSocket.send('%s'); }", json));
 
-        } catch (JsonProcessingException e) {}
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
 
-        sb.append(String.format("location.replace('%s');", request.getContextPath() + "/message/list"));
+        sb.append(String.format("location.replace('%s');",request.getContextPath() + "/message/list"));
 
         model.addAttribute("script", sb.toString());
 
         return "common/_execute_script";
     }
 
-    // 보내거나 받은 쪽지 목록 - 받은 쪽지 목록 default
+    /**
+     * 보낸거나 받은 쪽지 목록
+     *
+     * @return
+     */
     @GetMapping("/list")
     public String list(@ModelAttribute MessageSearch search, Model model) {
         commonProcess("list", model);
@@ -110,7 +119,6 @@ public class MessageController {
         return utils.tpl("message/list");
     }
 
-    // 쪽지 개별 조회
     @GetMapping("/view/{seq}")
     public String view(@PathVariable("seq") Long seq, Model model, HttpServletRequest request) {
         commonProcess("view", model);
@@ -120,28 +128,29 @@ public class MessageController {
 
         statusService.change(seq); // 열람 상태로 변경
 
-        String referer = Objects.requireNonNullElse(request.getHeader("referer"), "");
-        model.addAttribute("mode", referer.contains("mode=send") ? "send" : "receive");
+        String referer = Objects.requireNonNullElse(request.getHeader("referer"),"");
+        model.addAttribute("mode", referer.contains("mode=send") ? "send":"receive");
 
         return utils.tpl("message/view");
     }
 
-    // 쪽지 삭제
     @GetMapping("/delete/{seq}")
-    public String delete(@PathVariable("seq") Long seq,
-                         @RequestParam(name = "mode", defaultValue = "receive") String mode) {
+    public String delete(@PathVariable("seq") Long seq, @RequestParam(name="mode", defaultValue = "receive") String mode) {
 
-        deleteService.process(seq, mode); // mode 기본값 receive
+        deleteService.process(seq, mode);
 
         return "redirect:/message/list";
     }
 
-    // 컨트롤러 공통 처리
+    /**
+     * 컨트롤러 공통 처리
+     *
+     * @param mode
+     * @param model
+     */
     private void commonProcess(String mode, Model model) {
         mode = StringUtils.hasText(mode) ? mode : "list";
         String pageTitle = "";
-
-        // 파일 업로드 관련 자바스크립트(공통, 개별) 추가
         List<String> addCommonScript = new ArrayList<>();
         List<String> addScript = new ArrayList<>();
 

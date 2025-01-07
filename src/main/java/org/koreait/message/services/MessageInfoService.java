@@ -23,9 +23,6 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 
-/**
- * 쪽지 조회 기능 - 개별, 목록
- */
 @Lazy
 @Service
 @RequiredArgsConstructor
@@ -38,7 +35,12 @@ public class MessageInfoService {
     private final MemberUtil memberUtil;
     private final Utils utils;
 
-    // 개별 조회
+    /**
+     * 쪽지 하나 조회
+     *
+     * @param seq
+     * @return
+     */
     public Message get(Long seq) {
         BooleanBuilder builder = new BooleanBuilder();
         BooleanBuilder orBuilder = new BooleanBuilder();
@@ -50,14 +52,16 @@ public class MessageInfoService {
             BooleanBuilder orBuilder2 = new BooleanBuilder();
             BooleanBuilder andBuilder = new BooleanBuilder();
 
-            orBuilder2.or(andBuilder.and(message.notice.eq(true)).and(message.receiver.isNull())) // 공지 쪽지
-                            .or(message.receiver.eq(member)); // 받은 쪽지
+            orBuilder2.or(andBuilder.and(message.notice.eq(true)).and(message.receiver.isNull()))
+                    .or(message.receiver.eq(member));
 
             orBuilder.or(message.sender.eq(member))
-                            .or(orBuilder2);
+                    .or(orBuilder2);
+
 
             builder.and(orBuilder);
         }
+
 
         Message item = messageRepository.findOne(builder).orElseThrow(MessageNotFoundException::new);
 
@@ -66,10 +70,14 @@ public class MessageInfoService {
         return item;
     }
 
-    // 목록 조회
+    /**
+     * 쪽지 목록 조회
+     *
+     * @param search
+     * @return
+     */
     public ListData<Message> getList(MessageSearch search) {
-
-        int page = Math.max(search.getPage(), 1); // 1페이지 이상
+        int page = Math.max(search.getPage(), 1);
         int limit = search.getLimit();
         limit = limit < 1 ? 20 : limit;
         int offset = (page - 1) * limit;
@@ -78,23 +86,22 @@ public class MessageInfoService {
         BooleanBuilder andBuilder = new BooleanBuilder();
         QMessage message = QMessage.message;
         String mode = search.getMode();
-        Member member = memberUtil.getMember(); // 로그인한 사용자 정보
+        Member member = memberUtil.getMember();
 
         mode = StringUtils.hasText(mode) ? mode : "receive";
-
         // send - 보낸 쪽지 목록, receive - 받은 쪽지 목록
-        // mode 값이 없을 땐 받은 쪽지 목록이 기본값
         if (mode.equals("send")) {
             andBuilder.and(message.sender.eq(member));
         } else {
             BooleanBuilder orBuilder = new BooleanBuilder();
             BooleanBuilder andBuilder1 = new BooleanBuilder();
-            BooleanBuilder andBuilder2 = new BooleanBuilder();
 
             orBuilder.or(andBuilder1.and(message.notice.eq(true)).and(message.receiver.isNull())) // 공지쪽지
                     .or(message.receiver.eq(member));
-            andBuilder2.and(orBuilder);
+
+            andBuilder.and(orBuilder);
         }
+
 
         andBuilder.and(mode.equals("send") ? message.deletedBySender.eq(false) : message.deletedByReceiver.eq(false));
 
@@ -113,6 +120,7 @@ public class MessageInfoService {
 
             andBuilder.and(condition.contains(skey.trim()));
         }
+
         // 검색 조건 처리 E
 
         List<Message> items = queryFactory.selectFrom(message)
@@ -121,45 +129,56 @@ public class MessageInfoService {
                 .where(andBuilder)
                 .limit(limit)
                 .offset(offset)
-                .orderBy(message.notice.desc(), message.createdAt.desc()) // 1차 정렬 - 공지사항, 2차 정렬 - 수신 순서
+                .orderBy(message.notice.desc(), message.createdAt.desc())
                 .fetch();
 
         items.forEach(this::addInfo); // 추가 정보 처리
 
         long total = messageRepository.count(andBuilder);
-        Pagination pagination = new Pagination(page, (int) total, utils.isMobile() ? 5 : 10, limit, request);
+        Pagination pagination = new Pagination(page, (int)total, utils.isMobile() ? 5:10, limit, request);
 
         return new ListData<>(items, pagination);
     }
 
-    // 추가 정보 처리
+    /**
+     * 추가 정보 처리
+     *
+     * @param item
+     */
     private void addInfo(Message item) {
         String gid = item.getGid();
         item.setEditorImages(fileInfoService.getList(gid, "editor"));
         item.setAttachFiles(fileInfoService.getList(gid, "attach"));
 
         Member member = memberUtil.getMember();
-
         item.setReceived(
                 (item.isNotice() && item.getReceiver() == null) ||
-                item.getReceiver().getSeq().equals(member.getSeq())
-        ); // 수신한 메일 여부 확인
+                        item.getReceiver().getSeq().equals(member.getSeq())
+        );
 
         // 삭제 가능 여부
         boolean deletable = (item.isNotice() && memberUtil.isAdmin())
-                || (!item.isNotice() &&(item.getSender().getSeq().equals(member.getSeq())
-                || item.getReceiver().getSeq().equals(member.getSeq())));
+                || (!item.isNotice() && (item.getSender().getSeq().equals(member.getSeq()) || item.getReceiver().getSeq().equals(member.getSeq())));
         item.setDeletable(deletable);
     }
 
-    // 미열람 메세지 갯수
-    public long totalUnRead() {
+    /**
+     * 미열람 메세지 갯수
+     *
+     * @return
+     */
+    public long totalUnRead(String email) {
         BooleanBuilder andBuilder = new BooleanBuilder();
         QMessage message = QMessage.message;
-
-        andBuilder.and(message.receiver.eq(memberUtil.getMember()))
+        andBuilder.and(message.receiver.email.eq(email))
                 .and(message.status.eq(MessageStatus.UNREAD));
 
         return messageRepository.count(andBuilder);
+    }
+
+    public long totalUnRead() {
+        Member member = memberUtil.getMember();
+
+        return totalUnRead(member.getEmail());
     }
 }

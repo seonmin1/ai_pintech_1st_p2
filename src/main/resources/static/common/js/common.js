@@ -1,39 +1,45 @@
 var commonLib = commonLib ?? {};
 
-// 메타 태그 정보 조회
-// mode - rootUrl : <meta name="rootUrl" .../>
+/**
+* 메타 태그 정보 조회
+*   mode - rootUrl : <meta name="rootUrl" ... />
+*/
 commonLib.getMeta = function(mode) {
-    if (!mode) return; // mode 값이 없을 경우 return (처리 안함)
+    if (!mode) return;
 
     const el = document.querySelector(`meta[name='${mode}']`);
 
-    return el?.content; // ?. - 옵셔널 체이닝 문법
+    return el?.content;
 };
 
 /**
-* 자바스크립트에서 만든 주소에 컨텍스트 경로 추가
+* 자바스크립트에서 만든 주소에 컨택스트 경로 추가
+*
 */
 commonLib.url = function(url) {
     return `${commonLib.getMeta('rootUrl').replace("/", "")}${url}`;
 };
 
-// Ajax 요청 처리 함수 생성
-// @params url : 요청 주소, http[s] : 외부 URL - 컨텍스트 경로는 추가 안함
-// @params method : 요청 방식 - GET, POST, DELETE, PATCH
-// @params callback : 응답 완료 후 후속처리 콜백 함수
-// @params data : 요청 데이터(POST, PATCH, PUT 일때만 가능)
-// @params headers : 추가 요청 헤더
+/**
+* Ajax 요청 처리
+*
+* @params url : 요청 주소, http[s] : 외부 URL - 컨텍스트 경로는 추가 X
+* @params method 요청방식 - GET, POST, DELETE, PATCH ...
+* @params callback 응답 완료 후 후속 처리 콜백 함수
+* @params data : 요청 데이터(POST, PATCH, PUT ...)
+* @params headers : 추가 요청 헤더
+*/
 commonLib.ajaxLoad = function(url, callback, method = 'GET', data, headers, isText = false) {
-    if (!url) return; // url 없을 경우 처리 안함
+    if (!url) return;
 
     const { getMeta } = commonLib;
     const csrfHeader = getMeta("_csrf_header");
     const csrfToken = getMeta("_csrf");
-    url = /^http[s]?:/.test(url) ? url : getMeta("rootUrl") + url.replace("/", "");
+    url = /^http[s]?:/.test(url) ? url : commonLib.url(url);
 
-    headers = headers ?? {}; // headers 없으면 빈 배열 반환
-    headers[csrfHeader] = csrfToken; // 토큰에 실어서 보냄
-    method = method.toUpperCase(); // 통일성을 위해 method 대문자화
+    headers = headers ?? {};
+    headers[csrfHeader] = csrfToken;
+    method = method.toUpperCase();
 
     const options = {
         method,
@@ -41,7 +47,7 @@ commonLib.ajaxLoad = function(url, callback, method = 'GET', data, headers, isTe
     }
 
     if (data && ['POST', 'PUT', 'PATCH'].includes(method)) { // body 쪽 데이터 추가 가능
-        options.body = data instanceof FormData ? data : JSON.stringify(data); // FormData 형식일 때 그대로, 아니면 JSON 형식으로 변환
+        options.body = data instanceof FormData ? data : JSON.stringify(data);
     }
 
     return new Promise((resolve, reject) => {
@@ -59,29 +65,32 @@ commonLib.ajaxLoad = function(url, callback, method = 'GET', data, headers, isTe
                     return;
                 }
 
-                if (json?.success) { // 응답 성공 (처리 성공) - 후속 처리 callback
-                    if (typeof callback === 'function') { // 콜백 함수가 정의된 경우
+                if (json?.success) { // 응답 성공(처리 성공)
+                   if (typeof callback === 'function') { // 콜백 함수가 정의된 경우
                         callback(json.data);
-                    }
+                   }
 
-                    resolve(json);
+                   resolve(json);
 
-                    return;
+                   return;
                 }
 
-                reject(json); // 처리 실패 시
+                reject(json); // 처리 실패
             })
             .catch(err => {
                 console.error(err);
 
-                reject(err); // 응답 실패 시
+                reject(err); // 응답 실패
             });
     }); // Promise
 };
 
-// 레이어 팝업
-commonLib.popup = function(url, width = 350, height = 350, isAjax = false) {
-    /* 레이어 팝업 요소 동적 추가 S */
+/**
+* 레이어 팝업
+*
+*/
+commonLib.popup = function(url, width = 350, height = 350, isAjax = false, message) {
+    /* 레이어팝업 요소 동적 추가 S */
     const layerEls = document.querySelectorAll(".layer-dim, .layer-popup");
     layerEls.forEach(el => el.parentElement.removeChild(el));
 
@@ -102,7 +111,7 @@ commonLib.popup = function(url, width = 350, height = 350, isAjax = false) {
 
     /* 레이어 팝업 컨텐츠 영역 추가 */
     const content = document.createElement("div");
-    content.className = "layer-content";
+    content.className="layer-content";
     layerPopup.append(content);
 
     /* 레이어 팝업 닫기 버튼 추가 S */
@@ -119,14 +128,20 @@ commonLib.popup = function(url, width = 350, height = 350, isAjax = false) {
 
     document.body.append(layerPopup);
     document.body.append(layerDim);
-    /* 레이어 팝업 요소 동적 추가 E */
+
+
+    /* 레이어팝업 요소 동적 추가 E */
 
     /* 팝업 컨텐츠 로드 S */
-    if (isAjax) { // 컨텐츠를 ajax로 로드
+    if (isAjax) { // 컨텐트를 ajax로 로드
         const { ajaxLoad } = commonLib;
         ajaxLoad(url, null, 'GET', null, null, true)
             .then((text) => content.innerHTML = text);
-
+    } else if (message) { // 메세지 팝업
+        content.innerHTML = `<div class='message'>
+                                <i class='xi-info'></i>
+                                ${message}
+                             </div>`;
     } else { // iframe으로 로드
         const iframe = document.createElement("iframe");
         iframe.width = width - 80;
@@ -138,14 +153,29 @@ commonLib.popup = function(url, width = 350, height = 350, isAjax = false) {
     /* 팝업 컨텐츠 로드 E */
 }
 
-// 레이어 팝업 제거
-commonLib.popupClose = function () {
+/**
+* 메세지 출력 팝업
+*
+*/
+commonLib.message = function(message, width = 350, height = 200) {
+    commonLib.popup(null, width, height, false, message);
+};
+
+/**
+* 레이어팝업 제거
+*
+*/
+commonLib.popupClose = function() {
     const layerEls = document.querySelectorAll(".layer-dim, .layer-popup");
     layerEls.forEach(el => el.parentElement.removeChild(el));
 };
 
-// 위지윅 에디터 로드
+/**
+* 위지윅 에디터 로드
+*
+*/
 commonLib.loadEditor = function(id, height = 350) {
+
     if (typeof ClassicEditor === 'undefined' || !id) {
         return;
     }
@@ -157,17 +187,11 @@ commonLib.loadEditor = function(id, height = 350) {
                 resolve(editor);
                 editor.editing.view.change((writer) => {
                     writer.setStyle(
-                        "height",
-                        `${height}px`,
-                        editor.editing.view.document.getRoot()
+                           "height",
+                           `${height}px`,
+                           editor.editing.view.document.getRoot()
                         );
-                    });
-                /*
-                const editorAreas = document.getElementsByClassName("ck-editor__editable");
-                for (const el of editorAreas) {
-                    el.style.height = `${height}px`;
-                };
-                */
+                });
 
             } catch (err) {
                 console.error(err);
@@ -176,10 +200,11 @@ commonLib.loadEditor = function(id, height = 350) {
             }
         })();
     });
+
 };
 
 window.addEventListener("DOMContentLoaded", function() {
-    /* 체크박스 전체 토글 기능 S */
+    // 체크박스 전체 토글 기능 S
     const checkAlls = document.getElementsByClassName("check-all");
     for (const el of checkAlls) {
         el.addEventListener("click", function() {
@@ -194,9 +219,9 @@ window.addEventListener("DOMContentLoaded", function() {
             }
         });
     }
-    /* 체크박스 전체 토글 기능 E */
+    // 체크박스 전체 토글 기능 E
 
-    /* 팝업 버튼 클릭 처리 S */
+    // 팝업 버튼 클릭 처리 S
     const showPopups = document.getElementsByClassName("show-popup");
     for (const el of showPopups) {
         el.addEventListener("click", function() {
@@ -204,5 +229,5 @@ window.addEventListener("DOMContentLoaded", function() {
             commonLib.popup(url, width, height);
         });
     }
-    /* 팝업 버튼 클릭 처리 E */
+    // 팝업 버튼 클릭 처리 E
 });
