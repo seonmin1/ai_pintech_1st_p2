@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.koreait.admin.board.controllers.BoardConfigSearch;
 import org.koreait.admin.board.controllers.RequestBoard;
-import org.koreait.admin.board.exceptions.BoardNotFoundException;
+import org.koreait.board.exceptions.BoardNotFoundException;
 import org.koreait.board.entities.Board;
 import org.koreait.board.entities.QBoard;
 import org.koreait.board.repositories.BoardRepository;
