@@ -3,7 +3,10 @@ package org.koreait.board.controllers;
 import jakarta.validation.Valid;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.koreait.admin.board.validators.BoardValidator;
 import org.koreait.board.entities.Board;
+import org.koreait.board.entities.BoardData;
+import org.koreait.board.services.BoardUpdateService;
 import org.koreait.board.services.configs.BoardConfigInfoService;
 import org.koreait.file.constants.FileStatus;
 import org.koreait.file.services.FileInfoService;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @ApplyErrorPage
@@ -31,6 +35,8 @@ public class BoardController {
     private final MemberUtil memberUtil;
     private final BoardConfigInfoService configInfoService;
     private final FileInfoService fileInfoService;
+    private final BoardValidator boardValidator;
+    private final BoardUpdateService boardUpdateService;
 
     // 사용자별 공통 데이터 (게시판 설정 등등)
     @ModelAttribute("commonValue")
@@ -60,6 +66,9 @@ public class BoardController {
     public String write(@PathVariable("bid") String bid, @ModelAttribute RequestBoard form, Model model) {
         commonProcess(bid, "write", model);
 
+        form.setBid(bid);
+        form.setGid(UUID.randomUUID().toString());
+
         if (memberUtil.isLogin())  {
             form.setPoster(memberUtil.getMember().getName());
         }
@@ -83,6 +92,8 @@ public class BoardController {
         mode = StringUtils.hasText(mode) ? mode : "write";
         commonProcess(form.getBid(), mode, model);
 
+        boardValidator.validate(form, errors);
+
         if (errors.hasErrors()) {
             String gid = form.getGid();
             form.setEditorImages(fileInfoService.getList(gid, "editor", FileStatus.ALL));
@@ -91,11 +102,13 @@ public class BoardController {
             return utils.tpl("board/" + mode);
         }
 
+        BoardData data = boardUpdateService.process(form);
+
         Board board = commonValue.getBoard();
 
         // 글작성, 수정 성공 시 글보기 또는 글목록으로 이동
         String redirectUrl = String.format("/board/%s", board.getLocationAfterWriting()
-                                                             .equals("view") ? "view/.." : "list/" + board.getBid());
+                                                             .equals("view") ? "view/" + data.getSeq() : "list/" + board.getBid());
         return "redirect:" + redirectUrl;
     }
 

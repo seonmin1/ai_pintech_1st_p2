@@ -177,7 +177,7 @@ commonLib.popupClose = function() {
 commonLib.loadEditor = function(id, height = 350) {
 
     if (typeof ClassicEditor === 'undefined' || !id) {
-        return;
+        return Promise.resolve();
     }
 
     return new Promise((resolve, reject) => {
@@ -203,13 +203,22 @@ commonLib.loadEditor = function(id, height = 350) {
 
 };
 
+commonLib.insertEditorImage = function(imageUrls, editor) {
+    editor = editor ?? window.editor;
+    if (!editor) return;
+
+    imageUrls = typeof imageUrls === 'string' ? [imageUrls] : imageUrls;
+
+    editor.execute('insertImage', { source: imageUrls });
+};
+
 window.addEventListener("DOMContentLoaded", function() {
     // 체크박스 전체 토글 기능 S
     const checkAlls = document.getElementsByClassName("check-all");
     for (const el of checkAlls) {
         el.addEventListener("click", function() {
             const { targetClass } = this.dataset;
-            if (!targetClass) { // 토글할 체크박스의 클래스가 설정되지 않은 경우는 진행 X
+            if (!targetClass) { // 토클할 체크박스의 클래스가 설정되지 않은 경우는 진행 X
                 return;
             }
 

@@ -7,6 +7,7 @@ import org.koreait.file.constants.FileStatus;
 import org.koreait.file.services.FileInfoService;
 import org.koreait.global.annotations.ApplyErrorPage;
 import org.koreait.global.libs.Utils;
+import org.koreait.product.constants.DiscountType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -49,7 +50,9 @@ public class ProductController implements SubMenus {
     public String add(@ModelAttribute RequestProduct form, Model model) {
         commonProcess("add", model);
 
+        // 기본값 설정
         form.setGid(UUID.randomUUID().toString());
+        form.setDiscountType(DiscountType.NONE);
 
         return "admin/product/add";
     }
