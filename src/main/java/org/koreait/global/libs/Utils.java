@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.koreait.file.entities.FileInfo;
 import org.koreait.file.services.FileInfoService;
+import org.koreait.member.libs.MemberUtil;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ public class Utils {
     private final HttpServletRequest request;
     private final MessageSource messageSource;
     private final FileInfoService fileInfoService;
+    private final MemberUtil memberUtil;
 
     public boolean isMobile() {
 
@@ -163,7 +165,7 @@ public class Utils {
 
             if (mode.equals("background")) { // 배경 이미지
 
-                return String.format("<div style='width: %dpx; height: %dpx; background: url(\"%s\") no-repeat center center; background-size: cover;' class='%s'></div>", width, height, imageUrl, className);
+                return String.format("<div style='width: %dpx; height: %dpx; background: url(\"%s\") no-repeat center center; background-size: cover;' class='%s'%s></div>", width, height, imageUrl, className, seq != null && seq > 0L ? "data-seq='" + seq + "'" : "");
 
             } else { // 이미지 태그
                 return String.format("<img src='%s' class='%s'>", imageUrl, className);
@@ -204,5 +206,17 @@ public class Utils {
     // admin 페이지 팝업
     public String popup(String url, int width, int height) {
         return String.format("commonLib.popup('%s', %d, %d)", url, width, height);
+    }
+
+    // 회원, 비회원 구분 해시
+    public int getMemberHash() {
+        // 회원 - 회원번호, 비회원 - IP + User-Agent
+        if (memberUtil.isLogin()) return Objects.hash(memberUtil.getMember().getSeq());
+        else { // 비회원일 때
+            String ip = request.getRemoteAddr();
+            String ua = request.getHeader("User-Agent");
+
+            return Objects.hash(ip, ua);
+        }
     }
 }
