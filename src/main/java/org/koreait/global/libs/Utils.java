@@ -16,9 +16,6 @@ import org.springframework.validation.FieldError;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * 편의기능
- */
 @Component
 @RequiredArgsConstructor
 public class Utils {
@@ -30,18 +27,19 @@ public class Utils {
 
     public boolean isMobile() {
 
-        // 요청 헤더 - User-Agent 브라우저 정보 (모바일 or PC)
+        // 요청 헤더 - User-Agent / 브라우저 정보
         String ua = request.getHeader("User-Agent");
-
-        // 아래 문구가 포함되었는지, 아닌지로 패턴 체크
         String pattern = ".*(iPhone|iPod|iPad|BlackBerry|Android|Windows CE|LG|MOT|SAMSUNG|SonyEricsson).*";
+
 
         return StringUtils.hasText(ua) && ua.matches(pattern);
     }
 
     /**
      * mobile, front 템플릿 분리 함수
-     * - mobile 이면 mobile, pc 이면 front
+     *
+     * @param path
+     * @return
      */
     public String tpl(String path) {
         String prefix = isMobile() ? "mobile" : "front";
@@ -50,134 +48,128 @@ public class Utils {
     }
 
     /**
-     * 메세지 코드로 조회된 문구
+     * 메서지 코드로 조회된 문구
+     *
+     * @param code
+     * @return
      */
     public String getMessage(String code) {
-        Locale lo = request.getLocale(); // 사용자 요청 헤더에서 자동으로 가져온 Accept-Language (브라우저 언어 설정)
+        Locale lo = request.getLocale(); // 사용자 요청 헤더(Accept-Language)
 
         return messageSource.getMessage(code, null, lo);
     }
 
-    // 코드를 배열로 받았을 때 리스트로 바꿔주는 메서드
     public List<String> getMessages(String[] codes) {
 
-            return Arrays.stream(codes).map(c -> {
+        return Arrays.stream(codes).map(c -> {
+            try {
+                return getMessage(c);
+            } catch (Exception e) {
+                return "";
+            }
+        }).filter(s -> !s.isBlank()).toList();
 
-                try {
-                    return getMessage(c);
-                } catch (Exception e) {
-                    return "";
-                }
-            }).filter(s -> !s.isBlank()).toList(); // 빈 문자열이 아닐 경우 값을 가져와서 리스트화
     }
 
     /**
      * REST 커맨드 객체 검증 실패시에 에러 코드를 가지고 메세지 추출
+     *
+     * @param errors
+     * @return
      */
     public Map<String, List<String>> getErrorMessages(Errors errors) {
-
         ResourceBundleMessageSource ms = (ResourceBundleMessageSource) messageSource;
         ms.setUseCodeAsDefaultMessage(false);
-
         try {
             // 필드별 에러코드 - getFieldErrors()
+            // Collectors.toMap
             Map<String, List<String>> messages = errors.getFieldErrors()
                     .stream()
-                    .collect(Collectors.toMap(FieldError::getField, f -> getMessages(f.getCodes()), (v1, v2) -> v2)); // v1 처음값, v2 중복값
+                    .collect(Collectors.toMap(FieldError::getField, f -> getMessages(f.getCodes()), (v1, v2) -> v2));
 
             // 글로벌 에러코드 - getGlobalErrors()
             List<String> gMessages = errors.getGlobalErrors()
                     .stream()
-                    .flatMap(o -> getMessages(o.getCodes()).stream()) // [[..]] 형태를 [..] 형태로 변환하기위해 flatMap() 사용
+                    .flatMap(o -> getMessages(o.getCodes()).stream())
                     .toList();
-
-            // 글로벌 에러코드 필드 - global 고정
+            // 글로벌 에러코드 필드 - global
             if (!gMessages.isEmpty()) {
                 messages.put("global", gMessages);
             }
 
-            return messages; // 임시
-
+            return messages;
         } finally {
-            // 싱글톤 객체이므로 변경하면 영향을 줌 -> 다시 true로 변경해줘야 함
             ms.setUseCodeAsDefaultMessage(true);
         }
     }
 
     /**
      * 이미지 출력
-     * @param mode - image : 이미지 태그로 출력, background : 배경 이미지 형태로 출력
-     * 다양한 형태로 사용하기 위해서 오버로드 함
+     *
+     * @param width
+     * @param height
+     * @param mode - image : 이미지 태그로 출력, background : 배경 이미지 형태 출력
+     * @return
      */
     public String showImage(Long seq, int width, int height, String mode, String className) {
-
         return showImage(seq, null, width, height, mode, className);
     }
 
-    // mode 값이 없을 때 태그 값으로 고정
     public String showImage(Long seq, int width, int height, String className) {
-
         return showImage(seq, null, width, height, "image", className);
     }
 
     public String showBackground(Long seq, int width, int height, String className) {
-
         return showImage(seq, null, width, height, "background", className);
     }
 
     public String showImage(String url, int width, int height, String mode, String className) {
-
         return showImage(null, url, width, height, mode, className);
     }
 
     public String showImage(String url, int width, int height, String className) {
-
         return showImage(null, url, width, height, "image", className);
     }
 
     public String showBackground(String url, int width, int height, String className) {
-
         return showImage(null, url, width, height, "background", className);
     }
 
     public String showImage(Long seq, String url, int width, int height, String mode, String className) {
+
         try {
             String imageUrl = null;
-
             if (seq != null && seq > 0L) {
                 FileInfo item = fileInfoService.get(seq);
-
                 if (!item.isImage()) {
                     return "";
                 }
 
-                imageUrl = String.format("%s&with=%d&height=%d", item.getThumbUrl(), width, height);
+                imageUrl = String.format("%s&width=%d&height=%d", item.getThumbUrl(), width, height);
 
             } else if (StringUtils.hasText(url)) {
-                imageUrl = String.format("%s/api/file/thumb?url=%s&width=%d&height=%d",
-                                            request.getContextPath(), url, width, height);
+                imageUrl = String.format("%s/api/file/thumb?url=%s&width=%d&height=%d", request.getContextPath(), url, width, height);
             }
 
-            if (!StringUtils.hasText(imageUrl)) return ""; // imageUrl 없을 때 출력 X
+            if (!StringUtils.hasText(imageUrl)) return "";
 
             mode = Objects.requireNonNullElse(mode, "image");
             className = Objects.requireNonNullElse(className, "image");
-
             if (mode.equals("background")) { // 배경 이미지
 
-                return String.format("<div style='width: %dpx; height: %dpx; background: url(\"%s\") no-repeat center center; background-size: cover;' class='%s'%s></div>", width, height, imageUrl, className, seq != null && seq > 0L ? "data-seq='" + seq + "'" : "");
-
+                return String.format("<div style='width: %dpx; height: %dpx; background:url(\"%s\") no-repeat center center; background-size:cover;' class='%s'%s></div>", width, height, imageUrl, className, seq != null && seq > 0L ? "data-seq='" + seq + "'":"");
             } else { // 이미지 태그
                 return String.format("<img src='%s' class='%s'>", imageUrl, className);
             }
-
         } catch (Exception e) {}
 
-        return ""; // 오류 방지로 빈문자열 넣어줌
+        return "";
     }
+
     /**
-     * 관리자페이지 수정 및 저장 성공 시
-     * 메세지를 세션쪽에 저장해서 임시 팝업으로 띄움
+     * 메세지를 세션쪽에 저장해서 임시 팝업으로 띄운다.
+     *
+     * @param message
      */
     public void showSessionMessage(String message) {
         HttpSession session = request.getSession();
@@ -197,26 +189,40 @@ public class Utils {
         return request.getParameterValues(name);
     }
 
-    // 회원가입 약관 - 줄개행문자(\n 또는 \r\n)를 br 태그로 변환
+    /**
+     *  줄개행 문자(\n 또는 \r\n)를 br 태그로 변환
+     *
+     * @param text
+     * @return
+     */
     public String nl2br(String text) {
         return text == null ? "" : text.replaceAll("\\r", "")
-                                        .replaceAll("\\n", "<br>");
+                .replaceAll("\\n", "<br>");
     }
 
-    // admin 페이지 팝업
     public String popup(String url, int width, int height) {
-        return String.format("commonLib.popup('%s', %d, %d)", url, width, height);
+        return String.format("commonLib.popup('%s', %d, %d);", url, width, height);
     }
 
     // 회원, 비회원 구분 해시
     public int getMemberHash() {
         // 회원 - 회원번호, 비회원 - IP + User-Agent
         if (memberUtil.isLogin()) return Objects.hash(memberUtil.getMember().getSeq());
-        else { // 비회원일 때
+        else { // 비회원
             String ip = request.getRemoteAddr();
             String ua = request.getHeader("User-Agent");
 
             return Objects.hash(ip, ua);
         }
+    }
+
+    /**
+     * 전체 주소
+     *
+     * @param url
+     * @return
+     */
+    public String getUrl(String url) {
+        return String.format("%s://%s:%d%s%s", request.getScheme(), request.getServerName(), request.getServerPort(), request.getContextPath(), url);
     }
 }

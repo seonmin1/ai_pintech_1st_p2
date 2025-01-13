@@ -11,6 +11,7 @@ import org.koreait.global.entities.SiteConfig;
 import org.koreait.global.entities.Terms;
 import org.koreait.global.libs.Utils;
 import org.koreait.global.services.CodeValueService;
+import org.koreait.member.social.entities.SocialConfig;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -20,14 +21,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * 기본 관리자 설정 페이지
- */
 @Controller
 @ApplyErrorPage
 @RequiredArgsConstructor
 @RequestMapping("/admin/basic")
-public class BasicController implements SubMenus { // 반복되는 부분을 정의한 인터페이스 구현
+public class BasicController implements SubMenus {
 
     private final CodeValueService codeValueService;
     private final TermsUpdateService termsUpdateService;
@@ -43,12 +41,16 @@ public class BasicController implements SubMenus { // 반복되는 부분을 정
 
     /**
      * 사이트 기본 정보 설정
+     *
+     * @param model
+     * @return
      */
     @GetMapping({"", "/siteConfig"})
     public String siteConfig(Model model) {
         commonProcess("siteConfig", model);
 
         SiteConfig form = Objects.requireNonNullElseGet(codeValueService.get("siteConfig", SiteConfig.class), SiteConfig::new);
+
         model.addAttribute("siteConfig", form);
 
         return "admin/basic/siteConfig";
@@ -56,6 +58,10 @@ public class BasicController implements SubMenus { // 반복되는 부분을 정
 
     /**
      * 사이트 기본 정보 설정 처리
+     *
+     * @param form
+     * @param model
+     * @return
      */
     @PatchMapping("/siteConfig")
     public String siteConfigPs(SiteConfig form, Model model) {
@@ -63,7 +69,6 @@ public class BasicController implements SubMenus { // 반복되는 부분을 정
 
         codeValueService.save("siteConfig", form);
 
-        // 관리자 페이지 수정 및 저장 시 팝업 문구
         utils.showSessionMessage("저장되었습니다.");
 
         return "admin/basic/siteConfig";
@@ -96,33 +101,59 @@ public class BasicController implements SubMenus { // 반복되는 부분을 정
         return "common/_execute_script";
     }
 
-    // 약관 수정, 삭제 처리
-    @RequestMapping(path = "/terms", method = {RequestMethod.PATCH, RequestMethod.DELETE})
-    public String updateTerms(@RequestParam(name = "chk", required = false) List<Integer> chks, Model model) {
+    @RequestMapping(path="/terms", method={RequestMethod.PATCH, RequestMethod.DELETE})
+    public String updateTerms(@RequestParam(name="chk", required = false) List<Integer> chks, Model model) {
 
         termsUpdateService.processList(chks);
 
+
         String message = request.getMethod().equalsIgnoreCase("DELETE") ? "삭제" : "수정";
         message += "하였습니다.";
-        utils.showSessionMessage(message); // 메세지 출력 5초뒤에 삭제
+        utils.showSessionMessage(message);
 
         model.addAttribute("script", "parent.location.reload();");
-
         return "common/_execute_script";
+    }
+
+    @GetMapping("/social")
+    public String social(Model model) {
+        commonProcess("social", model);
+
+        SocialConfig form = codeValueService.get("socialConfig", SocialConfig.class);
+        form = Objects.requireNonNullElseGet(form, SocialConfig::new);
+
+        model.addAttribute("socialConfig", form);
+
+        return "admin/basic/social";
+    }
+
+    @PostMapping("/social")
+    public String socialPs(SocialConfig form, Model model) {
+        commonProcess("social", model);
+
+        codeValueService.save("socialConfig", form);
+
+        utils.showSessionMessage("저장되었습니다.");
+
+        return "admin/basic/social";
     }
 
     /**
      * 기본설정 공통 처리 부분
+     *
+     * @param mode
+     * @param model
      */
     private void commonProcess(String mode, Model model) {
 
         mode = StringUtils.hasText(mode) ? mode : "siteConfig";
         String pageTitle = null;
-
         if (mode.equals("siteConfig")) {
             pageTitle = "사이트 기본정보";
         } else if (mode.equals("terms")) {
             pageTitle = "약관 관리";
+        } else if (mode.equals("social")) {
+            pageTitle = "소셜 로그인";
         }
 
         pageTitle += " - 기본설정";

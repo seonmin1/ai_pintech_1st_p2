@@ -12,6 +12,7 @@ import org.koreait.member.entities.Member;
 import org.koreait.member.libs.MemberUtil;
 import org.koreait.member.services.MemberInfoService;
 import org.koreait.member.services.MemberUpdateService;
+import org.koreait.member.social.services.KakaoLoginService;
 import org.koreait.mypage.validators.ProfileValidator;
 import org.koreait.pokemon.controllers.PokemonSearch;
 import org.koreait.pokemon.entities.Pokemon;
@@ -38,11 +39,12 @@ import java.util.Objects;
 public class MypageController {
     private final Utils utils;
     private final MemberUtil memberUtil;
-    private final ModelMapper modelMapper; // getter, setter 자동
+    private final ModelMapper modelMapper;
     private final MemberUpdateService updateService;
     private final ProfileValidator profileValidator;
     private final MemberInfoService infoService;
     private final PokemonInfoService pokemonInfoService;
+    private final KakaoLoginService kakaoLoginService;
 
     @ModelAttribute("profile")
     public Member getMember() {
@@ -62,12 +64,13 @@ public class MypageController {
 
         Member member = memberUtil.getMember();
         RequestProfile form = modelMapper.map(member, RequestProfile.class);
-
         String optionalTerms = member.getOptionalTerms();
-
         if (StringUtils.hasText(optionalTerms)) {
             form.setOptionalTerms(Arrays.stream(optionalTerms.split("\\|\\|")).toList());
         }
+
+        form.setKakaoLoginConnectUrl(kakaoLoginService.getLoginUrl("connect"));
+        form.setKakaoLoginDisconnectUrl(kakaoLoginService.getLoginUrl("disconnect"));
 
         model.addAttribute("requestProfile", form);
 
@@ -89,10 +92,9 @@ public class MypageController {
         // 프로필 속성 변경
         model.addAttribute("profile", memberUtil.getMember());
 
-        return "redirect:/mypage"; // 회원정보 수정 완료 후 마이페이지 메인으로 이동
+        return "redirect:/mypage"; // 회원 정보 수정 완료 후 마이페이지 메인 이동
     }
 
-    // 회원 정보 갱신
     @ResponseBody
     @GetMapping("/refresh")
     public void refresh(Principal principal, Model model, HttpSession session) {
@@ -105,15 +107,15 @@ public class MypageController {
 
     /**
      * 찜하기 목록
-     * @param mode : POKEMON -> 포켓몬 찜하기 목록, BOARD -> 게시글 찜하기 목록
-     *             mode 값에 따라 출력 화면 다름, mode 값 없이 wishlist 만 입력해도 화면 출력
+     *
+     * @param mode : POKEMON : 포켓몬 찜하기 목록, BOARD : 게시글 찜하기 목록
+     * @return
      */
     @GetMapping({"/wishlist", "/wishlist/{mode}"})
-    public String wishlist(@PathVariable(name = "mode", required = false) WishType mode, CommonSearch search, Model model) {
+    public String wishlist(@PathVariable(name="mode", required = false) WishType mode, CommonSearch search, Model model) {
         commonProcess("wishlist", model);
 
         mode = Objects.requireNonNullElse(mode, WishType.POKEMON);
-
         if (mode == WishType.BOARD) { // 게시글 찜하기 목록
 
         } else { // 포켓몬 찜하기 목록
@@ -128,6 +130,9 @@ public class MypageController {
 
     /**
      * 컨트롤러 공통 처리 영역
+     *
+     * @param mode
+     * @param model
      */
     private void commonProcess(String mode, Model model) {
         mode = StringUtils.hasText(mode) ? mode : "main";
@@ -141,10 +146,9 @@ public class MypageController {
             addCommonScript.add("address");
             addScript.add("mypage/profile");
             pageTitle = utils.getMessage("회원정보_수정");
-
         } else if (mode.equals("wishlist")) { // 찜하기 목록
             addCommonScript.add("wish");
-            pageTitle = utils.getMessage("♥MY_WISHLIST♥");
+            pageTitle = utils.getMessage("나의_WISH");
         }
 
         model.addAttribute("addCommonScript", addCommonScript);
